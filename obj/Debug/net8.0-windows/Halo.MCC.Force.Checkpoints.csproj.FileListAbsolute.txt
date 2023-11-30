@@ -38,3 +38,4 @@ C:\Users\jbuonopa\My Programs\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-window
 C:\Users\jbuonopa\My Programs\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\Halo.MCC.Force.Checkpoints.pdb
 C:\Users\jbuonopa\My Programs\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\Halo.MCC.Force.Checkpoints.genruntimeconfig.cache
 C:\Users\jbuonopa\My Programs\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\ref\Halo.MCC.Force.Checkpoints.dll
+C:\Users\jbuonopa\My Programs\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\Halo.MCC.Force.Checkpoints.sourcelink.json
