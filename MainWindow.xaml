@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Halo.MCC.Force.Checkpoints"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="Halo MCC Force Checkpoints" Height="450" Width="800"
         WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterScreen"
         SizeChanged="Window_SizeChanged">
     <Border BorderBrush="Gray" BorderThickness="1">
@@ -25,6 +25,124 @@
                 </DockPanel>
             </Border>
             <Grid Background="#FF2D2B2B" Grid.Row="1">
+                <Label x:Name="selectGameLabel" Content="Select a game" HorizontalAlignment="Left" Margin="23,27,0,0" VerticalAlignment="Top" Width="87" Foreground="White"/>
+                <Label x:Name="keyBindingLabel" Content="Function hot key binding" HorizontalAlignment="Left" Margin="138,62,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
+                <Label x:Name="gameSelectedLabel" Content="Game selected: None" HorizontalAlignment="Left" Margin="138,27,0,0" VerticalAlignment="Top" Width="177" Foreground="White"/>
+                <Button x:Name="haloCEButton" Content="Halo CE" HorizontalAlignment="Left" Margin="30,70,0,0" VerticalAlignment="Top" Click="HaloCEButton_Click" Width="61" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="halo2Button" Content="Halo 2" HorizontalAlignment="Left" Margin="30,102,0,0" VerticalAlignment="Top" Click="Halo2Button_Click" Width="61" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="halo3Button" Content="Halo 3" HorizontalAlignment="Left" Margin="30,134,0,0" VerticalAlignment="Top" Click="Halo3Button_Click" Width="61" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="halo3ODSTButton" Content="Halo 3: ODST" HorizontalAlignment="Left" Margin="30,166,0,0" VerticalAlignment="Top" Click="Halo3ODSTButton_Click" Width="84" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="haloReachButton" Content="Halo: Reach" HorizontalAlignment="Left" Margin="30,198,0,0" VerticalAlignment="Top" Click="HaloReachButton_Click" Width="84" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="halo4Button" Content="Halo 4" HorizontalAlignment="Left" Margin="30,230,0,0" VerticalAlignment="Top" Click="Halo4Button_Click" Width="61" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="forceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Left" Margin="30,268,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Label x:Name="versionLabel" Content="v0.0" HorizontalAlignment="Left" Margin="10,382,0,0" VerticalAlignment="Top" Width="79" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
+                <Button x:Name="recordInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="141,112,0,0" VerticalAlignment="Top" Click="RecordInputButton_Click" Width="151" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <TextBox x:Name="keybindingTextBox" HorizontalAlignment="Left" Margin="141,88,0,0" Text="" VerticalAlignment="Top" Width="151" Background="#FF464646" Foreground="White"
+                         IsReadOnly="True"/>
             </Grid>
         </Grid>
     </Border>
