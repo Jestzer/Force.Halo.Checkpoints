@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -157,21 +158,54 @@ namespace Halo.MCC.Force.Checkpoints
         {
             // For testing.
             MessageBox.Show("Hi there.");
-            int bytesWritten;
             if (gameSelected == "Halo CE")
             {
                 try
                 {
-                    byte[] buffer;
-                    buffer = [1];
-                    if (WriteProcessMemory(HCMGlobal.GlobalProcessHandle, FindPointerAddress(HCMGlobal.GlobalProcessHandle, HCMGlobal.BaseAddress, HCMGlobal.LoadedOffsets.H1_CoreSave[Convert.ToInt32(HCMGlobal.WinFlag)]), buffer, buffer.Length, out bytesWritten))
+                    string processName = "mcc";
+                    int processId = GetProcessIdByName(processName);
+
+                    if (processId == -1)
                     {
-                        MessageBox.Show("yay");
+                        MessageBox.Show("Halo CE is not running.");
+                        return;
                     }
-                    else
+
+                    const int PROCESS_WM_READ = 0x0010;
+                    const int PROCESS_WM_WRITE = 0x0020;
+                    const int PROCESS_VM_OPERATION = 0x0008;
+
+                    IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
+
+                    // Define your offsets and the value to write here.
+                    int[][] ints =
+                                        [
+                        [0x3F94F90, 0xC8, 0x2657DFE],
+                        [0x3DE6578, 0xC8, 0x2657DFE]
+                                        ];
+                    int[][] HR_Checkpoint = ints;
+
+                    foreach (var checkpoint in HR_Checkpoint)
                     {
-                        MessageBox.Show("sorry");
+                        IntPtr baseAddress = (IntPtr)checkpoint[0];
+                        int valueToWrite = checkpoint[2];
+                        byte[] buffer = BitConverter.GetBytes(valueToWrite);
+
+                        IntPtr pointerAddress = FindPointerAddress(processHandle, baseAddress, [checkpoint[1]]);
+                        bool result = WriteProcessMemory(processHandle, pointerAddress, buffer, buffer.Length, out int bytesWritten);
+
+                        if (result && bytesWritten == buffer.Length)
+                        {
+                            MessageBox.Show("yay");
+                        }
+                        else
+                        {
+                            MessageBox.Show("sorry");
+                        }
                     }
+
+                    // Close the process handle if necessary
+                    // CloseHandle(processHandle);
                 }
                 catch (Exception ex)
                 {
@@ -180,7 +214,7 @@ namespace Halo.MCC.Force.Checkpoints
             }
             else if (gameSelected == "Halo 2")
             {
-
+                // Similar logic for Halo 2
             }
             else
             {
@@ -257,164 +291,21 @@ namespace Halo.MCC.Force.Checkpoints
             }
             return ptr;
         }
-        public static class HCMGlobal
+
+        private int GetProcessIdByName(string processName)
         {
-            public static Offsets LoadedOffsets;
-            public static bool WinFlag = false; //false = Steam, used for knowing which offsets to use.
-            public static IntPtr GlobalProcessHandle;
-            public static IntPtr BaseAddress;
-        }
-
-        public class Offsets
-        {
-            //offsets are gonna be stored as 2-unit arrays, first position is winstore, second is Steam
-            //that way when we're calling them from elsewhere we can just call Offsets.WhateverOffset[HCMGlobal.WinFlag] and it'll give us the one we want
-            //the units will themselves be arbitary length arrays (each position for each offset in a multi-level pointer)
-
-            //the actual values will be populated from the json file corrosponding to the attached mcc version
-
-            //general
-            public int[][] gameindicatormagic; //renamed from gameindicator > gameindicatormagicmagic. This is to 
-                                               //deliberately break HCM versions before 0.9.3 since if they recieve
-                                               //the 2028 offsets, they'll write junk data to cpmessage calls and crash MCC
-            public int[][] menuindicator;
-            public int[][] stateindicator;
-
-            //h1
-            public int[][] H1_LevelName; //45 33 c0 48 8b 50 28 8b 12 non writeable, third/last result, scroll up to mov that writes 01. that writes to revert
-            public int[][] H1_CoreSave;
-            public int[][] H1_CoreLoad;
-            public int[][] H1_CheckString;
-            public int[][] H1_TickCounter; //b0 01 4c 8b 7c 24 20 4c 8b 74 24 28. inc right above.
-            public int[][] H1_Message; //8b 48 0c 89 0b. 89 0b writes to it (only when getting a message)
-
-            public byte[] H1_MessageCode; //
-            public int H1_CPData_LevelCode;
-            public int H1_CPData_StartTick;
-            public int H1_CPData_Difficulty;
-            public int H1_CPData_Size;
-
-
-
-
-            //hr
-            public int[][] HR_LevelName; //0x3FB3D9 ahead of checkpoint
-            public int[][] HR_CheckString;
-            public int[][] HR_Checkpoint; //4a 8b 14 3b b8 a8 00 00 00, mov right above
-            public int[][] HR_Revert; //rel
-            public int[][] HR_DRflag; //b8 50 00 00 00 ** ** ** ** ** ** 48 8b 04 18, it's the ** when you get a cp
-            public int[][] HR_CPLocation; //just scan lol
-            public int[][] HR_LoadedSeed; //45 33 ff 84 db, take first. the mov above writes to a byte that's 0x2B before the loaded seed
-            public int[][] HR_TickCounter; //8b c7 48 8b 0c 18 44 01 61 0c. the add writes to it.
-            public int[][] HR_Message; //4B 8b 04 2e 8b 48 0c 89 4b 04. last mov writes to it (messageTC) when getting message.
-            public int[][] HR_MessageCall; //48 89 6c 24 20 41 b9 01 00 00 00. should have "checkpoint save" next to it in disassembly. the call 7 instructions above the cp save is the cp message call ; E8 67 46 28 00
-
-
-            public byte[] HR_MessageCode;
-            public int HR_CPData_LevelCode;
-            public int HR_CPData_StartTick;
-            public int HR_CPData_Difficulty;
-            public int HR_CPData_Seed;
-            public int HR_CPData_DROffset1;
-            public int HR_CPData_DROffset2;
-            public int[] HR_CPData_SHA;
-            public int HR_CPData_Size;
-            public int[][] HR_CPData_PreserveLocations;
-
-
-
-            public int[][] H2_LevelName; //take second last oldmombassa from; load outskirts then scan for, WRITEABLE: 30 33 61 5F 6F 6C 64 6D 6F 6D 62 61 73 61 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 73 63 65 6E 61 72 69 6F 73 5C 73 6F 6C 6F 5C 30 33 61 5F 6F 6C 64 6D 6F 6D 62 61 73
-            public int[][] H2_CheckString;
-            public int[][] H2_Checkpoint; //rel
-            public int[][] H2_Revert; //bf ff ff ff ff ** ** 33 c9, the cmp immediately above accesses it
-            public int[][] H2_DRflag; //c1 e0 05 8b d8 d1 ef 83 cb 40. movzx below accesses it on revert.
-            public int[][] H2_CPLocation; //just scan lol
-            public int[][] H2_CPLocation2; //just scan lol
-            public int[][] H2_TickCounter; //f3 0f 5d c6 0f 28 74 24 40 40 84 f6, it's a mov like 10 instr below
-            public int[][] H2_Message; // the 89 03 (mov [rbx], eax), above c6 83 82 00 00 00 01 66 c7
-            public int[][] H2_MessageCall; //48 8b 10 ff 52 58 48 8b c8 48 8b 10, go a little down to the call that immd precedes a mov and cmp. E8 57 CA 18 00
-            public int[][] H2_LoadedBSP1; //scan for writable, unicode, case sens "halo2\h2_m". two of the results will have "untracked version" a little above". 0x1F8 before the halo2 string is the bsp bytes.
-            public int[][] H2_LoadedBSP2;
-
-
-            public byte[] H2_MessageCode;
-            public int H2_CPData_LevelCode;
-            public int H2_CPData_StartTick;
-            public int H2_CPData_Difficulty;
-            public int[] H2_CPData_BSP;
-            public int H2_CPData_DROffset1;
-            public int H2_CPData_DROffset2;
-            public int H2_CPData_Size;
-            public int[][] H2_CPData_PreserveLocations;
-
-
-            public int[][] H3_LevelName; //load up ark easy, scan for writeable 64 61 65 68 0B 00 00 00 00 E0 D4 22 00 00 00 00 84 D6 F5 8A 01 00 00 00 00 E0 9E 1C 00 00 36 06
-            public int[][] H3_CheckString;
-            public int[][] H3_Checkpoint; //rel
-            public int[][] H3_Revert; //first halo3 result of 4c 8d 5c 24 60 49 8b 5b 10 49 8b 73 18 49 8b 7b 20 4d 8b 73 28, it's the mov below it
-            public int[][] H3_DRflag; //ff c0 ** ** ** ** ** ** 99 b9 00 02 00 00. it's the mov edx when getting a checkpoint.
-            public int[][] H3_CPLocation; //just scan lol
-            public int[][] H3_TickCounter; //48 8b 04 c8 48 8b 0c 10 8b 59 0c,, movs below point to it
-            public int[][] H3_Message; //4a 8b 0c c0 48 8b 04 31 8b 48 0c, first result, mov ecx writes to messageTC when getting cp
-            public int[][] H3_MessageCall; //48 83 ec 68 33 c9  call immediately below. E8 31 DF 1F 00
-            public int[][] H3_LoadedBSP1; //load into ark. two last results of scan for writeable 01 00 00 00 00 00 00 00 C0 09 68 14 01 10 00 00 01 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-            public int[][] H3_LoadedBSP2;
-
-
-            public byte[] H3_MessageCode;
-            public int H3_CPData_LevelCode;
-            public int H3_CPData_StartTick;
-            public int H3_CPData_Difficulty;
-            public int[] H3_CPData_BSP;
-            public int[] H3_CPData_SHA;
-            public int H3_CPData_DROffset1;
-            public int H3_CPData_DROffset2;
-            public int H3_CPData_Size;
-            public int[][] H3_CPData_PreserveLocations;
-
-
-            public int[][] OD_LevelName;
-            public int[][] OD_CheckString;
-            public int[][] OD_Checkpoint;
-            public int[][] OD_Revert;
-            public int[][] OD_DRflag;
-            public int[][] OD_CPLocation;
-            public int[][] OD_TickCounter;
-            public int[][] OD_Message;
-            public int[][] OD_MessageCall;
-            public int[][] OD_LoadedBSP1;
-            public int[][] OD_LoadedBSP2;
-
-            public byte[] OD_MessageCode;
-            public int OD_CPData_LevelCode;
-            public int OD_CPData_StartTick;
-            public int OD_CPData_Difficulty;
-            public int[] OD_CPData_BSP;
-            public int[] OD_CPData_SHA;
-            public int OD_CPData_DROffset1;
-            public int OD_CPData_DROffset2;
-            public int OD_CPData_Size;
-            public int[][] OD_CPData_PreserveLocations;
-
-            public int[][] H4_LevelName;
-            public int[][] H4_CheckString;
-            public int[][] H4_Checkpoint;
-            public int[][] H4_Revert;
-            public int[][] H4_DRflag;
-            public int[][] H4_CPLocation;
-            public int[][] H4_TickCounter;
-            public int[][] H4_Message;
-            public int[][] H4_MessageCall;
-
-
-            public byte[] H4_MessageCode;
-            public int H4_CPData_LevelCode;
-            public int H4_CPData_StartTick;
-            public int H4_CPData_Difficulty;
-            public int H4_CPData_DROffset1;
-            public int H4_CPData_DROffset2;
-            public int H4_CPData_Size;
-            public int[][] H4_CPData_PreserveLocations;
+            // Get all processes with the specified name.
+            Process[] processes = Process.GetProcessesByName(processName);
+            if (processes.Length > 0)
+            {
+                // Return the PID of the first process found.
+                return processes[0].Id;
+            }
+            else
+            {
+                // No process found with the specified name.
+                return -1;
+            }
         }
     }
 }
