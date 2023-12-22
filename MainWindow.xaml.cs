@@ -162,7 +162,7 @@ namespace Halo.MCC.Force.Checkpoints
             {
                 try
                 {
-                    string processName = "mcc";
+                    string processName = "MCC-Win64-Shipping";
                     int processId = GetProcessIdByName(processName);
 
                     if (processId == -1)
