@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -28,6 +29,12 @@ namespace Halo.MCC.Force.Checkpoints
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, out int lpNumberOfBytesWritten);
+
+        [DllImport("psapi.dll", SetLastError = true)]
+        public static extern bool EnumProcessModulesEx(IntPtr hProcess, [Out] IntPtr[] lphModule, int cb, out int lpcbNeeded, uint dwFilterFlag);
+
+        [DllImport("psapi.dll")]
+        public static extern uint GetModuleBaseName(IntPtr hProcess, IntPtr hModule, StringBuilder lpBaseName, int nSize);
         public MainWindow()
         {
             InitializeComponent();
@@ -157,7 +164,6 @@ namespace Halo.MCC.Force.Checkpoints
         private void ForceCheckpointButton_Click(object sender, RoutedEventArgs e)
         {
             // For testing.
-            MessageBox.Show("Hi there.");
             if (gameSelected == "Halo CE")
             {
                 try
@@ -177,31 +183,36 @@ namespace Halo.MCC.Force.Checkpoints
 
                     IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
 
-                    // Define your offsets and the value to write here.
-                    int[][] ints =
-                                        [
-                        [0x3F94F90, 0xC8, 0x2657DFE],
-                        [0x3DE6578, 0xC8, 0x2657DFE]
-                                        ];
-                    int[][] HR_Checkpoint = ints;
+                    // Get the base address of halo1.dll in the process's memory space
+                    IntPtr halo1DllBaseAddress = GetModuleBaseAddress(processId, "halo1.dll");
 
-                    foreach (var checkpoint in HR_Checkpoint)
+                    if (halo1DllBaseAddress == IntPtr.Zero)
                     {
-                        IntPtr baseAddress = (IntPtr)checkpoint[0];
-                        int valueToWrite = checkpoint[2];
-                        byte[] buffer = BitConverter.GetBytes(valueToWrite);
+                        MessageBox.Show("Failed to find the base address of halo1.dll.");
+                        return;
+                    }
+                    // Define the offset from the base address of halo1.dll
+                    int offset = 0x2B23707; // The offset you found with Cheat Engine
 
-                        IntPtr pointerAddress = FindPointerAddress(processHandle, baseAddress, [checkpoint[1]]);
-                        bool result = WriteProcessMemory(processHandle, pointerAddress, buffer, buffer.Length, out int bytesWritten);
+                    // Calculate the address to write to by adding the offset to the base address
+                    IntPtr addressToWriteTo = IntPtr.Add(halo1DllBaseAddress, offset);
 
-                        if (result && bytesWritten == buffer.Length)
-                        {
-                            MessageBox.Show("yay");
-                        }
-                        else
-                        {
-                            MessageBox.Show("sorry");
-                        }
+                    // Define the value to write (1 byte)
+                    byte valueToWrite = 1;
+
+                    // Allocate a buffer with the value to write
+                    byte[] buffer = new byte[] { valueToWrite };
+
+                    // Write the value to the calculated address
+                    bool result = WriteProcessMemory(processHandle, addressToWriteTo, buffer, buffer.Length, out int bytesWritten);
+
+                    if (result && bytesWritten == buffer.Length)
+                    {
+                        MessageBox.Show("Checkpoint forced successfully.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to write to process memory.");
                     }
 
                     // Close the process handle if necessary
@@ -306,6 +317,30 @@ namespace Halo.MCC.Force.Checkpoints
                 // No process found with the specified name.
                 return -1;
             }
+        }
+
+        private IntPtr GetModuleBaseAddress(int processId, string moduleName)
+        {
+            IntPtr modBaseAddr = IntPtr.Zero;
+            IntPtr[] moduleHandles = new IntPtr[1024];
+
+            if (EnumProcessModulesEx(Process.GetProcessById(processId).Handle, moduleHandles, IntPtr.Size * moduleHandles.Length, out int bytesNeeded, 0x03))
+            {
+                int numModules = bytesNeeded / IntPtr.Size;
+                for (int i = 0; i < numModules; i++)
+                {
+                    StringBuilder modName = new StringBuilder(255);
+                    if (GetModuleBaseName(Process.GetProcessById(processId).Handle, moduleHandles[i], modName, modName.Capacity) > 0)
+                    {
+                        if (modName.ToString().Equals(moduleName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            modBaseAddr = moduleHandles[i];
+                            break;
+                        }
+                    }
+                }
+            }
+            return modBaseAddr;
         }
     }
 }
