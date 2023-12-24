@@ -161,71 +161,86 @@ namespace Halo.MCC.Force.Checkpoints
             gameSelected = "Halo 4";
         }
 
+        private void ForceCheckpoint(string gameName, string dllName, int offset)
+        {
+            try
+            {
+                string processName = "MCC-Win64-Shipping";
+                int processId = GetProcessIdByName(processName);
+
+                if (processId == -1)
+                {
+                    MessageBox.Show($"{gameName} is not running.");
+                    return;
+                }
+
+                const int PROCESS_WM_READ = 0x0010;
+                const int PROCESS_WM_WRITE = 0x0020;
+                const int PROCESS_VM_OPERATION = 0x0008;
+
+                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
+
+                // Get the base address of the DLL in the process's memory space
+                IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+
+                if (dllBaseAddress == IntPtr.Zero)
+                {
+                    MessageBox.Show($"Failed to find the base address of {dllName}.");
+                    return;
+                }
+
+                // Calculate the address to write to by adding the offset to the base address
+                IntPtr addressToWriteTo = IntPtr.Add(dllBaseAddress, offset);
+
+                // Define the value to write (1 byte)
+                byte valueToWrite = 1;
+
+                // Allocate a buffer with the value to write
+                byte[] buffer = new byte[] { valueToWrite };
+
+                // Write the value to the calculated address
+                bool result = WriteProcessMemory(processHandle, addressToWriteTo, buffer, buffer.Length, out int bytesWritten);
+
+                if (result && bytesWritten == buffer.Length)
+                {
+                    MessageBox.Show("Checkpoint forced successfully.");
+                }
+                else
+                {
+                    MessageBox.Show("Failed to write to process memory.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
         private void ForceCheckpointButton_Click(object sender, RoutedEventArgs e)
         {
-            // For testing.
             if (gameSelected == "Halo CE")
             {
-                try
-                {
-                    string processName = "MCC-Win64-Shipping";
-                    int processId = GetProcessIdByName(processName);
-
-                    if (processId == -1)
-                    {
-                        MessageBox.Show("Halo CE is not running.");
-                        return;
-                    }
-
-                    const int PROCESS_WM_READ = 0x0010;
-                    const int PROCESS_WM_WRITE = 0x0020;
-                    const int PROCESS_VM_OPERATION = 0x0008;
-
-                    IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
-
-                    // Get the base address of halo1.dll in the process's memory space
-                    IntPtr halo1DllBaseAddress = GetModuleBaseAddress(processId, "halo1.dll");
-
-                    if (halo1DllBaseAddress == IntPtr.Zero)
-                    {
-                        MessageBox.Show("Failed to find the base address of halo1.dll.");
-                        return;
-                    }
-                    // Define the offset from the base address of halo1.dll
-                    int offset = 0x2B23707; // The offset you found with Cheat Engine
-
-                    // Calculate the address to write to by adding the offset to the base address
-                    IntPtr addressToWriteTo = IntPtr.Add(halo1DllBaseAddress, offset);
-
-                    // Define the value to write (1 byte)
-                    byte valueToWrite = 1;
-
-                    // Allocate a buffer with the value to write
-                    byte[] buffer = new byte[] { valueToWrite };
-
-                    // Write the value to the calculated address
-                    bool result = WriteProcessMemory(processHandle, addressToWriteTo, buffer, buffer.Length, out int bytesWritten);
-
-                    if (result && bytesWritten == buffer.Length)
-                    {
-                        MessageBox.Show("Checkpoint forced successfully.");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to write to process memory.");
-                    }
-
-                    // Close the process handle if necessary
-                    // CloseHandle(processHandle);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
+                ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
             }
             else if (gameSelected == "Halo 2")
             {
-                // Similar logic for Halo 2
+                ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+            }
+            else if (gameSelected == "Halo 3")
+            {
+                ForceCheckpoint("Halo 3", "halo3.dll", 0xE6FD7E);
+            }
+            else if (gameSelected == "Halo 4")
+            {
+                ForceCheckpoint("Halo 4", "halo4.dll", 0xE6FD7E);
+            }
+            else if (gameSelected == "Halo Reach")
+            {
+                ForceCheckpoint("Halo Reach", "haloreach.dll", 0xE6FD7E);
+            }
+            else if (gameSelected == "Halo 3 ODST")
+            {
+                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0xE6FD7E);
             }
             else
             {
