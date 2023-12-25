@@ -35,9 +35,30 @@ namespace Halo.MCC.Force.Checkpoints
 
         [DllImport("psapi.dll")]
         public static extern uint GetModuleBaseName(IntPtr hProcess, IntPtr hModule, StringBuilder lpBaseName, int nSize);
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // For printing the version number.
+            DataContext = this;
+        }
+
+        public static string PackageVersion
+        {
+            get
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                if (assembly != null)
+                {
+                    var version = assembly.GetName().Version;
+                    if (version != null)
+                    {
+                        return version.ToString();
+                    }
+                }
+                return "Error getting version number.";
+            }
         }
 
         private void RegisterCurrentHotkey()
@@ -195,10 +216,10 @@ namespace Halo.MCC.Force.Checkpoints
                 // Define the value to write (1 byte)
                 byte valueToWrite = 1;
 
-                // Allocate a buffer with the value to write
-                byte[] buffer = new byte[] { valueToWrite };
+                // Allocate a buffer with the value to write.
+                byte[] buffer = [valueToWrite];
 
-                // Write the value to the calculated address
+                // Write the value to the calculated address.
                 bool result = WriteProcessMemory(processHandle, addressToWriteTo, buffer, buffer.Length, out int bytesWritten);
 
                 if (result && bytesWritten == buffer.Length)
@@ -228,19 +249,19 @@ namespace Halo.MCC.Force.Checkpoints
             }
             else if (gameSelected == "Halo 3")
             {
-                ForceCheckpoint("Halo 3", "halo3.dll", 0xE6FD7E);
+                ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
             }
             else if (gameSelected == "Halo 4")
             {
-                ForceCheckpoint("Halo 4", "halo4.dll", 0xE6FD7E);
+                ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
             }
             else if (gameSelected == "Halo Reach")
             {
-                ForceCheckpoint("Halo Reach", "haloreach.dll", 0xE6FD7E);
+                ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
             }
             else if (gameSelected == "Halo 3 ODST")
             {
-                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0xE6FD7E);
+                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
             }
             else
             {
@@ -273,13 +294,6 @@ namespace Halo.MCC.Force.Checkpoints
         {
             // Find out what the key being pressed is.
             Key key = e.Key;
-
-            // Only accept function keys.
-            if (key < Key.F1 || key > Key.F12)
-            {
-                MessageBox.Show("Only function keys are accepted.");
-                return;
-            }
 
             // Append the key pressed to the TextBox.
             keybindingTextBox.Text += key.ToString();
