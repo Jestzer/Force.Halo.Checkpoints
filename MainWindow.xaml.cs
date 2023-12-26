@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -46,6 +47,23 @@ namespace Halo.MCC.Force.Checkpoints
             DataContext = this;
         }
 
+        private void ShowErrorWindow(string errorMessage)
+        {
+            ErrorWindow errorWindow = new ErrorWindow();
+            errorWindow.ErrorTextBlock.Text = errorMessage;
+            errorWindow.Owner = this;
+            errorWindow.ShowDialog();
+        }
+
+        private void ShowUpdateWindow(string errorMessage, string customTitle)
+        {
+            ErrorWindow errorWindow = new ErrorWindow();
+            errorWindow.ErrorTextBlock.Text = errorMessage;
+            errorWindow.Owner = this;
+            errorWindow.Title = customTitle;
+            errorWindow.ShowDialog();
+        }
+
         public static string PackageVersion
         {
             get
@@ -71,96 +89,91 @@ namespace Halo.MCC.Force.Checkpoints
             string latestReleaseUrl = "https://api.github.com/repos/Jestzer/Halo.MCC.Force.Checkpoints/releases/latest";
 
             // Use HttpClient to fetch the latest release data.
-            using (HttpClient client = new())
-            {
-                // GitHub API requires a user-agent. I'm adding the extra headers to reduce HTTP error 403s.
-                client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Halo.MCC.Force.Checkpoints", PackageVersion));
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            using HttpClient client = new();
 
+            // GitHub API requires a user-agent. I'm adding the extra headers to reduce HTTP error 403s.
+            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Halo.MCC.Force.Checkpoints", PackageVersion));
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            try
+            {
                 try
                 {
-                    try
+                    // Make the latest release a JSON string.
+                    string jsonString = await client.GetStringAsync(latestReleaseUrl);
+
+                    // Parse the JSON to get the tag_name (version number).
+                    using JsonDocument doc = JsonDocument.Parse(jsonString);
+                    JsonElement root = doc.RootElement;
+                    string latestVersionString = root.GetProperty("tag_name").GetString()!;
+
+                    // Remove 'v' prefix if present in the tag name.
+                    latestVersionString = latestVersionString.TrimStart('v');
+
+                    // Parse the version string.
+                    Version latestVersion = new Version(latestVersionString);
+
+                    // Compare the current version with the latest version.
+                    if (currentVersion.CompareTo(latestVersion) < 0)
                     {
-                        // Make the latest release a JSON string.
-                        string jsonString = await client.GetStringAsync(latestReleaseUrl);
-
-                        // Parse the JSON to get the tag_name (version number).
-                        using JsonDocument doc = JsonDocument.Parse(jsonString);
-                        JsonElement root = doc.RootElement;
-                        string latestVersionString = root.GetProperty("tag_name").GetString()!;
-
-                        // Remove 'v' prefix if present in the tag name.
-                        latestVersionString = latestVersionString.TrimStart('v');
-
-                        // Parse the version string.
-                        Version latestVersion = new Version(latestVersionString);
-
-                        // Compare the current version with the latest version.
-                        if (currentVersion.CompareTo(latestVersion) < 0)
-                        {
-                            // A newer version is available!
-                            ErrorWindow errorWindow = new();
-                            errorWindow.ErrorTextBlock.Text = "";
-                            errorWindow.URLTextBlock.Visibility = Visibility.Visible;
-                            errorWindow.Title = "Check for updates";
-                            errorWindow.ShowDialog();
-                        }
-                        else
-                        {
-                            // The current version is up-to-date.
-                            ErrorWindow errorWindow = new();
-                            errorWindow.Title = "Check for updates";
-                            errorWindow.ErrorTextBlock.Text = "You are using the latest release available.";
-                            errorWindow.ShowDialog();
-                        }
-                    }
-                    catch (JsonException ex)
-                    {
+                        // A newer version is available!
                         ErrorWindow errorWindow = new();
+                        errorWindow.Owner = this;
+                        errorWindow.ErrorTextBlock.Text = "";
+                        errorWindow.URLTextBlock.Visibility = Visibility.Visible;
                         errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "The Json code in this program didn't work. Here's the automatic error message it made: \"" + ex.Message + "\"";
                         errorWindow.ShowDialog();
                     }
-                    catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                    else
                     {
-                        ErrorWindow errorWindow = new();
-                        errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "HTTP error 403: GitHub is saying you're sending them too many requests, so... slow down, I guess? " +
-                            "Here's the automatic error message: \"" + ex.Message + "\"";
-                        errorWindow.ShowDialog();
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        ErrorWindow errorWindow = new();
-                        errorWindow.Title = "Check for updates";
-                        errorWindow.ErrorTextBlock.Text = "HTTP error. Here's the automatic error message: \"" + ex.Message + "\"";
-                        errorWindow.ShowDialog();
+                        ShowUpdateWindow("You are using the latest release available.", "Check for updates");
                     }
                 }
-                catch (Exception ex)
+                catch (JsonException ex)
                 {
-                    ErrorWindow errorWindow = new();
-                    errorWindow.Title = "Check for updates";
-                    errorWindow.ErrorTextBlock.Text = "Oh dear, it looks this program had a hard time making the needed connection to GitHub. Make sure you're connected to the internet " +
-                        "and your lousy firewall/VPN isn't blocking the connection. Here's the automated error message: \"" + ex.Message + "\"";
-                    errorWindow.ShowDialog();
+                    ShowUpdateWindow("The Json code in this program didn't work. Here's the automatic error message it made: \"" + ex.Message + "\"", "Check for updates");
                 }
+                catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    ShowUpdateWindow("HTTP error 403: GitHub is saying you're sending them too many requests, so... slow down, I guess? " +
+                        "Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
+                }
+                catch (HttpRequestException ex)
+                {
+                    ShowUpdateWindow("HTTP error. Here's the automatic error message: \"" + ex.Message + "\"", "Check for updates");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowUpdateWindow("Oh dear, it looks this program had a hard time making the needed connection to GitHub. Make sure you're connected to the internet " +
+                    "and your lousy firewall/VPN isn't blocking the connection. Here's the automated error message: \"" + ex.Message + "\"", "Check for updates");
             }
         }
 
         private void RegisterCurrentHotkey()
         {
             var helper = new WindowInteropHelper(this);
-            string hotkeyName = keybindingTextBox.Text.ToUpper();
+            string hotkeyName = KeybindingTextBox.Text.ToUpper();
+            uint vk;
 
             // Convert the key name to a Key enumeration, so it can actually be used.
-            Key key = (Key)Enum.Parse(typeof(Key), hotkeyName);
-            uint vk = (uint)KeyInterop.VirtualKeyFromKey(key);
+            try
+            {
+                Key key = (Key)Enum.Parse(typeof(Key), hotkeyName);
+                vk = (uint)KeyInterop.VirtualKeyFromKey(key);
+            }
+            catch
+            {
+                KeybindingTextBox.Text = string.Empty;
+                ShowErrorWindow($"You cannot use that key as your hotkey.");
+                UnregisterCurrentHotkey();
+                return;
+            }
 
             // Register the hotkey.
             if (!RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_NONE, vk))
             {
-                MessageBox.Show("Failed to register hotkey.");
+                ShowErrorWindow("Failed to register hotkey.");
             }
             else
             {
@@ -174,6 +187,7 @@ namespace Halo.MCC.Force.Checkpoints
             {
                 var helper = new WindowInteropHelper(this);
                 UnregisterHotKey(helper.Handle, HOTKEY_ID);
+
                 // Reset the current hotkey.
                 currentHotkey = 0;
             }
@@ -209,24 +223,6 @@ namespace Halo.MCC.Force.Checkpoints
         {
             Close();
         }
-        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Toggle between maximized and not.
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-        }
-
-        // Changing the window border size when maximized so that it doesn't go past the screen borders.
-        public void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                BorderThickness = new Thickness(5);
-            }
-            else
-            {
-                BorderThickness = new Thickness(0);
-            }
-        }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -235,37 +231,37 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void HaloCEButton_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo CE";
+            GameSelectedLabel.Content = "Game selected: Halo CE";
             gameSelected = "Halo CE";
         }
 
         private void Halo2Button_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo 2";
+            GameSelectedLabel.Content = "Game selected: Halo 2";
             gameSelected = "Halo 2";
         }
 
         private void Halo3Button_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo 3";
+            GameSelectedLabel.Content = "Game selected: Halo 3";
             gameSelected = "Halo 3";
         }
 
         private void Halo3ODSTButton_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo 3: ODST";
+            GameSelectedLabel.Content = "Game selected: Halo 3: ODST";
             gameSelected = "Halo 3 ODST";
         }
 
         private void HaloReachButton_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo: Reach";
+            GameSelectedLabel.Content = "Game selected: Halo: Reach";
             gameSelected = "Halo Reach";
         }
 
         private void Halo4Button_Click(object sender, RoutedEventArgs e)
         {
-            gameSelectedLabel.Content = "Game selected: Halo 4";
+            GameSelectedLabel.Content = "Game selected: Halo 4";
             gameSelected = "Halo 4";
         }
 
@@ -278,7 +274,7 @@ namespace Halo.MCC.Force.Checkpoints
 
                 if (processId == -1)
                 {
-                    MessageBox.Show($"{gameName} is not running.");
+                    ShowErrorWindow($"{gameName} is not running.");
                     return;
                 }
 
@@ -288,19 +284,19 @@ namespace Halo.MCC.Force.Checkpoints
 
                 IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
 
-                // Get the base address of the DLL in the process's memory space
+                // Get the base address of the DLL in the process's memory space.
                 IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
 
                 if (dllBaseAddress == IntPtr.Zero)
                 {
-                    MessageBox.Show($"Failed to find the base address of {dllName}.");
+                    ShowErrorWindow($"Failed to find the base address of {dllName}.");
                     return;
                 }
 
-                // Calculate the address to write to by adding the offset to the base address
+                // Calculate the address to write to by adding the offset to the base address.
                 IntPtr addressToWriteTo = IntPtr.Add(dllBaseAddress, offset);
 
-                // Define the value to write (1 byte)
+                // Define the value to write (1 byte.)
                 byte valueToWrite = 1;
 
                 // Allocate a buffer with the value to write.
@@ -311,16 +307,19 @@ namespace Halo.MCC.Force.Checkpoints
 
                 if (result && bytesWritten == buffer.Length)
                 {
-                    MessageBox.Show("Checkpoint forced successfully.");
+                    StatusTextBlock.Text = "Checkpoint successfully forced!";
                 }
                 else
                 {
-                    MessageBox.Show("Failed to write to process memory.");
+                    StatusTextBlock.Text = "Checkpoint unsuccessfully forced.";
+                    ShowErrorWindow("Checkpoint unsuccessfully forced (Failed to write to process memory.)");
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                ShowErrorWindow(ex.ToString());
+                return;
             }
         }
 
@@ -352,7 +351,7 @@ namespace Halo.MCC.Force.Checkpoints
             }
             else
             {
-                MessageBox.Show("Select a game first.");
+                ShowErrorWindow("Select a game first.");
             }
         }
 
@@ -364,17 +363,17 @@ namespace Halo.MCC.Force.Checkpoints
 
             if (isRecordingInput)
             {
-                keybindingTextBox.Text = String.Empty;
+                KeybindingTextBox.Text = String.Empty;
 
                 // Start recording.
                 KeyDown += OnKeyDownHandler;
-                recordInputButton.Content = "Stop Recording Input";
+                RecordInputButton.Content = "Stop Recording Input";
             }
             else
             {
                 // Stop recording.
                 KeyDown -= OnKeyDownHandler;
-                recordInputButton.Content = "Start Recording Input";
+                RecordInputButton.Content = "Start Recording Input";
             }
         }
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -383,8 +382,7 @@ namespace Halo.MCC.Force.Checkpoints
             Key key = e.Key;
 
             // Append the key pressed to the TextBox.
-            keybindingTextBox.Text += key.ToString();
-
+            KeybindingTextBox.Text += key.ToString();
 
             // Stop recording after the key is pressed.
             isRecordingInput = false;
@@ -394,7 +392,7 @@ namespace Halo.MCC.Force.Checkpoints
             UnregisterCurrentHotkey();
             RegisterCurrentHotkey();
 
-            recordInputButton.Content = "Start Recording Input";
+            RecordInputButton.Content = "Start Recording Input";
         }
         public static IntPtr FindPointerAddress(IntPtr hProc, IntPtr ptr, int[] offsets)
         {
@@ -419,7 +417,7 @@ namespace Halo.MCC.Force.Checkpoints
             return ptr;
         }
 
-        private int GetProcessIdByName(string processName)
+        private static int GetProcessIdByName(string processName)
         {
             // Get all processes with the specified name.
             Process[] processes = Process.GetProcessesByName(processName);
@@ -435,7 +433,7 @@ namespace Halo.MCC.Force.Checkpoints
             }
         }
 
-        private IntPtr GetModuleBaseAddress(int processId, string moduleName)
+        private static IntPtr GetModuleBaseAddress(int processId, string moduleName)
         {
             IntPtr modBaseAddr = IntPtr.Zero;
             IntPtr[] moduleHandles = new IntPtr[1024];

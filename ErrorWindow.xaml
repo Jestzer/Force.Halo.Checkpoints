@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Halo.MCC.Force.Checkpoints"
         mc:Ignorable="d"
-        Title="ErrorWindow" Height="250" Width="450"
-    WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Error" Height="250" Width="450"
+    WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Border BorderBrush="Gray" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
@@ -22,10 +22,15 @@
                 </DockPanel>
             </Border>
             <Grid Background="#FF2D2B2B" Grid.Row="1">
-                <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap" Text="Errors will appear in this pop-up window." Foreground="White" Margin="32,31,45,32" FontSize="14"/>
-                <TextBlock x:Name="URLTextBlock" TextWrapping="Wrap" Foreground="White" Margin="32,31,45,32" FontSize="14" Visibility="Hidden"> 
+                <Grid Margin="32,10,45,58">
+                    <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap" 
+               Text="Errors will appear in this pop-up window." Foreground="White" 
+               FontSize="14" TextAlignment="Center" HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/>
+                </Grid>
+                <TextBlock x:Name="URLTextBlock" TextWrapping="Wrap" Foreground="White" Margin="32,31,45,32" FontSize="14" Visibility="Hidden" TextAlignment="Center"> 
                        A newer version is available! Please download it from 
-                    <Hyperlink NavigateUri="https://github.com/Jestzer/options.file.checker.c/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Hyperlink NavigateUri="https://github.com/Jestzer/Halo.MCC.Force.Checkpoints/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
                         GitHub
                     </Hyperlink>.
                 </TextBlock>
