@@ -198,6 +198,23 @@
                     </Button.Template>
                 </Button>
                 <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting input" TextWrapping="Wrap" Foreground="White" Width="144" Margin="143,56,511,302"/>
+                <Button x:Name="HaloCENonMCC" Content="Halo: Reach" HorizontalAlignment="Left" Margin="149,0,0,0" VerticalAlignment="Center" Click="HaloReachButton_Click" Width="84" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFCECECE" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Grid>
         </Grid>
     </Border>
