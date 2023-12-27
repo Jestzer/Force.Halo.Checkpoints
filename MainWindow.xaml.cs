@@ -265,10 +265,15 @@ namespace Halo.MCC.Force.Checkpoints
             gameSelected = "Halo 4";
         }
 
-        private void HaloCustomEditionButton_Click(object sender, RoutedEventArgs e)
+        private void HaloCEOGButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo: CE (non-MCC)";
             gameSelected = "Halo CE OG";
+        }
+        private void HaloCustomEditionButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameSelectedLabel.Content = "Game selected: Halo: Custom Edition";
+            gameSelected = "Halo Custom Edition";
         }
 
         private void ForceCheckpoint(string gameName, string dllName, int offset)
@@ -280,6 +285,10 @@ namespace Halo.MCC.Force.Checkpoints
                 if (gameSelected == "Halo CE OG")
                 {
                     processName = "halo";
+                }
+                else if (gameSelected == "Halo Custom Edition")
+                {
+                    processName = "haloce";
                 }
                 else
                 {
@@ -368,6 +377,10 @@ namespace Halo.MCC.Force.Checkpoints
             else if (gameSelected == "Halo CE OG")
             {
                 ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+            }
+            else if (gameSelected == "Halo Custom Edition")
+            {
+                ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
             }
             else
             {

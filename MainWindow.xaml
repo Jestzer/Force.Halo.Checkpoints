@@ -197,8 +197,25 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting input" TextWrapping="Wrap" Foreground="White" Margin="137,148,469,210"/>
-                <Button x:Name="HaloCENonMCC" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="32,263,0,0" VerticalAlignment="Top" Click="HaloCustomEditionButton_Click" Width="117" Foreground="White">
+                <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting input" TextWrapping="Wrap" Foreground="White" Margin="137,148,469,168"/>
+                <Button x:Name="HaloCEOGButton" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="32,262,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="129" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFCECECE" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="HaloCustomEditionButton" Content="Halo: Custom Edition" HorizontalAlignment="Left" Margin="30,294,0,0" VerticalAlignment="Top" Click="HaloCustomEditionButton_Click" Width="131" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
