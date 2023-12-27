@@ -14,6 +14,7 @@ namespace Halo.MCC.Force.Checkpoints
     {
         private uint currentHotkey = 0;
         public string gameSelected = string.Empty;
+        public string friendlyGameName = string.Empty;
 
         // Any unique ID will do for now.
         private const int HOTKEY_ID = 9000;
@@ -233,56 +234,74 @@ namespace Halo.MCC.Force.Checkpoints
         {
             GameSelectedLabel.Content = "Game selected: Halo CE";
             gameSelected = "Halo CE";
+            friendlyGameName = "Halo: Combat Evolved";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void Halo2Button_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo 2";
             gameSelected = "Halo 2";
+            friendlyGameName = gameSelected;
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void Halo3Button_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo 3";
             gameSelected = "Halo 3";
+            friendlyGameName = gameSelected;
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void Halo3ODSTButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo 3: ODST";
             gameSelected = "Halo 3 ODST";
+            friendlyGameName = "Halo 3: ODST";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void HaloReachButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo: Reach";
             gameSelected = "Halo Reach";
+            friendlyGameName = "Halo: Reach";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void Halo4Button_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo 4";
             gameSelected = "Halo 4";
+            friendlyGameName = gameSelected;
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void HaloCEOGButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo: CE (non-MCC)";
             gameSelected = "Halo CE OG";
+            friendlyGameName = "The original Halo: Combat Evolved for PC";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
         private void HaloCustomEditionButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo: Custom Edition";
             gameSelected = "Halo Custom Edition";
+            friendlyGameName = "Halo: Custom Edition";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
         private void Halo2VistaButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo: 2 Vista";
+            GameSelectedLabel.Content = "Game selected: Halo 2: Vista";
             gameSelected = "Halo 2 Vista";
+            friendlyGameName = "Halo 2: Vista";
+            StatusTextBlock.Text = "Status: Awaiting input";
         }
 
-        private void ForceCheckpoint(string gameName, string dllName, int offset)
+        private void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
             try
             {
@@ -309,7 +328,7 @@ namespace Halo.MCC.Force.Checkpoints
 
                 if (processId == -1)
                 {
-                    ShowErrorWindow($"{gameName} is not running.");
+                    ShowErrorWindow($"{friendlyGameName} is not running.");
                     return;
                 }
 
@@ -342,11 +361,11 @@ namespace Halo.MCC.Force.Checkpoints
 
                 if (result && bytesWritten == buffer.Length)
                 {
-                    StatusTextBlock.Text = "Checkpoint successfully forced!";
+                    StatusTextBlock.Text = "Status: Checkpoint successfully forced!";
                 }
                 else
                 {
-                    StatusTextBlock.Text = "Checkpoint unsuccessfully forced.";
+                    StatusTextBlock.Text = "Status: Checkpoint unsuccessfully forced.";
                     ShowErrorWindow("Checkpoint unsuccessfully forced (Failed to write to process memory.)");
                     return;
                 }
@@ -398,6 +417,7 @@ namespace Halo.MCC.Force.Checkpoints
             }
             else
             {
+                StatusTextBlock.Text = "Status: Please select a game first!";
                 ShowErrorWindow("Select a game first.");
             }
         }
