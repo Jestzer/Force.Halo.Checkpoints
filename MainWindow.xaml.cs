@@ -276,6 +276,12 @@ namespace Halo.MCC.Force.Checkpoints
             gameSelected = "Halo Custom Edition";
         }
 
+        private void Halo2VistaButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameSelectedLabel.Content = "Game selected: Halo: 2 Vista";
+            gameSelected = "Halo 2 Vista";
+        }
+
         private void ForceCheckpoint(string gameName, string dllName, int offset)
         {
             try
@@ -289,6 +295,10 @@ namespace Halo.MCC.Force.Checkpoints
                 else if (gameSelected == "Halo Custom Edition")
                 {
                     processName = "haloce";
+                }
+                else if (gameSelected == "Halo 2 Vista")
+                {
+                    processName = "halo2";
                 }
                 else
                 {
@@ -381,6 +391,10 @@ namespace Halo.MCC.Force.Checkpoints
             else if (gameSelected == "Halo Custom Edition")
             {
                 ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
+            }
+            else if (gameSelected == "Halo 2 Vista")
+            {
+                ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
             }
             else
             {

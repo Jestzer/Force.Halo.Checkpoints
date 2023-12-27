@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Halo.MCC.Force.Checkpoints"
         mc:Ignorable="d"
-        Title="Halo MCC Force Checkpoints" Height="450" Width="800"
+        Title="Halo MCC Force Checkpoints" Height="500" Width="800"
         WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterOwner">
     <Border BorderBrush="Gray" BorderThickness="1">
         <Grid>
@@ -142,7 +142,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Left" Margin="30,326,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
+                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Left" Margin="30,360,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -159,7 +159,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Label x:Name="LiterallyVLabel" Content="v" HorizontalAlignment="Left" Margin="10,382,0,0" VerticalAlignment="Top" Width="79" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
+                <Label x:Name="LiterallyVLabel" Content="v" HorizontalAlignment="Left" Margin="10,432,0,0" VerticalAlignment="Top" Width="79" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
                 <Label x:Name="VersionLabel" Content="{Binding PackageVersion}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="54" Foreground="White" Height="27" Margin="18,0,0,9"/>
                 <Button x:Name="RecordInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="132,77,0,0" VerticalAlignment="Top" Click="RecordInputButton_Click" Width="150" Foreground="White">
                     <Button.Template>
@@ -198,7 +198,7 @@
                     </Button.Template>
                 </Button>
                 <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting input" TextWrapping="Wrap" Foreground="White" Margin="137,148,469,168"/>
-                <Button x:Name="HaloCEOGButton" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="32,262,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="129" Foreground="White">
+                <Button x:Name="HaloCEOGButton" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="30,262,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="129" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -216,6 +216,23 @@
                     </Button.Template>
                 </Button>
                 <Button x:Name="HaloCustomEditionButton" Content="Halo: Custom Edition" HorizontalAlignment="Left" Margin="30,294,0,0" VerticalAlignment="Top" Click="HaloCustomEditionButton_Click" Width="131" Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFCECECE" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="Halo2VistaButton" Content="Halo: 2 Vista" HorizontalAlignment="Left" Margin="30,326,0,0" VerticalAlignment="Top" Click="Halo2VistaButton_Click" Width="84" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
