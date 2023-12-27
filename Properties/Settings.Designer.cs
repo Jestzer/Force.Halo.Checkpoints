@@ -22,5 +22,17 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string HotKeyPreference {
+            get {
+                return ((string)(this["HotKeyPreference"]));
+            }
+            set {
+                this["HotKeyPreference"] = value;
+            }
+        }
     }
 }
