@@ -46,6 +46,11 @@ namespace Halo.MCC.Force.Checkpoints
 
             // For printing the version number.
             DataContext = this;
+
+            if (Properties.Settings.Default.HotKeyPreference != string.Empty)
+            {
+                //Hot # add some code to set preference hotkey on launch.
+            }
         }
 
         private void ShowErrorWindow(string errorMessage)
@@ -154,7 +159,7 @@ namespace Halo.MCC.Force.Checkpoints
         private void RegisterCurrentHotkey()
         {
             var helper = new WindowInteropHelper(this);
-            string hotkeyName = KeybindingTextBox.Text.ToUpper();
+            string hotkeyName = KeyBindingTextBox.Text.ToUpper();
             uint vk;
 
             // Convert the key name to a Key enumeration, so it can actually be used.
@@ -165,7 +170,7 @@ namespace Halo.MCC.Force.Checkpoints
             }
             catch
             {
-                KeybindingTextBox.Text = string.Empty;
+                KeyBindingTextBox.Text = string.Empty;
                 ShowErrorWindow($"You cannot use that key as your hotkey.");
                 UnregisterCurrentHotkey();
                 return;
@@ -210,18 +215,21 @@ namespace Halo.MCC.Force.Checkpoints
             }
             return IntPtr.Zero;
         }
+
         private void OnHotKeyPressed()
         {
             ForceCheckpointButton_Click(this, new RoutedEventArgs());
         }
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
         }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
+            
             Close();
         }
 
@@ -285,6 +293,7 @@ namespace Halo.MCC.Force.Checkpoints
             friendlyGameName = "The original Halo: Combat Evolved for PC";
             StatusTextBlock.Text = "Status: Awaiting input";
         }
+
         private void HaloCustomEditionButton_Click(object sender, RoutedEventArgs e)
         {
             GameSelectedLabel.Content = "Game selected: Halo: Custom Edition";
@@ -423,6 +432,7 @@ namespace Halo.MCC.Force.Checkpoints
         }
 
         private bool isRecordingInput = false;
+
         private void RecordInputButton_Click(object sender, RoutedEventArgs e)
         {
             // Toggle the recording state.
@@ -430,7 +440,7 @@ namespace Halo.MCC.Force.Checkpoints
 
             if (isRecordingInput)
             {
-                KeybindingTextBox.Text = String.Empty;
+                KeyBindingTextBox.Text = String.Empty;
 
                 // Start recording.
                 KeyDown += OnKeyDownHandler;
@@ -443,13 +453,14 @@ namespace Halo.MCC.Force.Checkpoints
                 RecordInputButton.Content = "Start Recording Input";
             }
         }
+
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             // Find out what the key being pressed is.
             Key key = e.Key;
 
             // Append the key pressed to the TextBox.
-            KeybindingTextBox.Text += key.ToString();
+            KeyBindingTextBox.Text += key.ToString();
 
             // Stop recording after the key is pressed.
             isRecordingInput = false;
@@ -461,6 +472,7 @@ namespace Halo.MCC.Force.Checkpoints
 
             RecordInputButton.Content = "Start Recording Input";
         }
+
         public static IntPtr FindPointerAddress(IntPtr hProc, IntPtr ptr, int[] offsets)
         {
             var buffer = new byte[IntPtr.Size];

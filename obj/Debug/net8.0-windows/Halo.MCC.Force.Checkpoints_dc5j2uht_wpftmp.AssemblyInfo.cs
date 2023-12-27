@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Halo.MCC.Force.Checkpoints")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1+3e6b21147bee6f1a82ead0130a8bedabd9e7eb36")]
 [assembly: System.Reflection.AssemblyProductAttribute("Halo.MCC.Force.Checkpoints")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Halo.MCC.Force.Checkpoints")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.0.1.0")]
