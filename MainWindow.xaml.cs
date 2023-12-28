@@ -315,7 +315,7 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void HaloCEOGButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo: CE (non-MCC)";
+            GameSelectedLabel.Content = "Game selected: Halo: CE (not MCC)";
             gameSelected = "Halo CE OG";
             friendlyGameName = "The original Halo: Combat Evolved for PC";
             StatusTextBlock.Text = "Status: Awaiting input";
