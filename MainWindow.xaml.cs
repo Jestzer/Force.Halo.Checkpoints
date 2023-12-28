@@ -11,6 +11,26 @@ namespace Halo.MCC.Force.Checkpoints
 {
     public partial class MainWindow : Window
     {
+
+        private const int WH_KEYBOARD_LL = 13;
+        private const int WM_KEYDOWN = 0x0100;
+        private static LowLevelKeyboardProc _proc = HookCallback;
+        private static IntPtr _hookID = IntPtr.Zero;
+
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
         private uint currentHotkey = 0;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
@@ -25,8 +45,10 @@ namespace Halo.MCC.Force.Checkpoints
 
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+        
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, out int lpNumberOfBytesRead);
 
@@ -42,6 +64,7 @@ namespace Halo.MCC.Force.Checkpoints
         public MainWindow()
         {
             InitializeComponent();
+            _hookID = SetHook(_proc);
 
             // For printing the version number.
             DataContext = this;
@@ -50,6 +73,38 @@ namespace Halo.MCC.Force.Checkpoints
             {
                 //Hot # add some code to set preference hotkey on launch.
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            UnhookWindowsHookEx(_hookID);
+            base.OnClosed(e);
+        }
+
+        private static IntPtr SetHook(LowLevelKeyboardProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+                    GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            {
+                int vkCode = Marshal.ReadInt32(lParam);
+                // Check if the key pressed matches your hotkey combination
+                // For example, if your hotkey is CTRL + F1:
+                if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control &&
+                    vkCode == KeyInterop.VirtualKeyFromKey(Key.F1))
+                {
+                    // Execute your code here
+                }
+            }
+            return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
         private void ShowErrorWindow(string errorMessage)
