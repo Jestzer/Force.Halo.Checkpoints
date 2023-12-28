@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -92,13 +91,13 @@ namespace Halo.MCC.Force.Checkpoints
             Version currentVersion = new(PackageVersion);
 
             // GitHub API URL for the latest release.
-            string latestReleaseUrl = "https://api.github.com/repos/Jestzer/Halo.MCC.Force.Checkpoints/releases/latest";
+            string latestReleaseUrl = "https://api.github.com/repos/Jestzer/Halo.Force.Checkpoints/releases/latest";
 
             // Use HttpClient to fetch the latest release data.
             using HttpClient client = new();
 
             // GitHub API requires a user-agent. I'm adding the extra headers to reduce HTTP error 403s.
-            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Halo.MCC.Force.Checkpoints", PackageVersion));
+            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Halo.Force.Checkpoints", PackageVersion));
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
             try

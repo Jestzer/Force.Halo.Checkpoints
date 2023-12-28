@@ -62,3 +62,4 @@ C:\Users\toaja\My_Programs_Local\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-win
 C:\Users\toaja\My_Programs_Local\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\ref\Halo.MCC.Force.Checkpoints.dll
 C:\Users\toaja\My_Programs_Local\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\ErrorWindow.g.cs
 C:\Users\toaja\My_Programs_Local\Halo.MCC.Force.Checkpoints\obj\Debug\net8.0-windows\ErrorWindow.baml
+C:\Users\toaja\My_Programs_Local\Halo.MCC.Force.Checkpoints\bin\Debug\net8.0-windows\Halo.MCC.Force.Checkpoints.dll.config
