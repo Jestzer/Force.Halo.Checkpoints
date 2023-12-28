@@ -34,5 +34,41 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
                 this["HotKeyPreference"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastGameSelected {
+            get {
+                return ((string)(this["LastGameSelected"]));
+            }
+            set {
+                this["LastGameSelected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastGameSelectedLabel {
+            get {
+                return ((string)(this["LastGameSelectedLabel"]));
+            }
+            set {
+                this["LastGameSelectedLabel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastGameFriendlyName {
+            get {
+                return ((string)(this["LastGameFriendlyName"]));
+            }
+            set {
+                this["LastGameFriendlyName"] = value;
+            }
+        }
     }
 }

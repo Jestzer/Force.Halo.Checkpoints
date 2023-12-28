@@ -14,11 +14,11 @@
   "project": {
     "version": "0.0.1",
     "restore": {
-      "projectUniqueName": "C:\\Users\\toaja\\My_Programs_Local\\Halo.MCC.Force.Checkpoints\\Halo.MCC.Force.Checkpoints.csproj",
+      "projectUniqueName": "C:\\Users\\toaja\\My_Programs_Local\\Halo.Force.Checkpoints\\Halo.MCC.Force.Checkpoints.csproj",
       "projectName": "Halo.MCC.Force.Checkpoints",
-      "projectPath": "C:\\Users\\toaja\\My_Programs_Local\\Halo.MCC.Force.Checkpoints\\Halo.MCC.Force.Checkpoints.csproj",
+      "projectPath": "C:\\Users\\toaja\\My_Programs_Local\\Halo.Force.Checkpoints\\Halo.MCC.Force.Checkpoints.csproj",
       "packagesPath": "C:\\Users\\toaja\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\toaja\\My_Programs_Local\\Halo.MCC.Force.Checkpoints\\obj\\",
+      "outputPath": "C:\\Users\\toaja\\My_Programs_Local\\Halo.Force.Checkpoints\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,26 +13,6 @@ namespace Halo.MCC.Force.Checkpoints
 {
     public partial class MainWindow : Window
     {
-
-        private const int WH_KEYBOARD_LL = 13;
-        private const int WM_KEYDOWN = 0x0100;
-        private static LowLevelKeyboardProc _proc = HookCallback;
-        private static IntPtr _hookID = IntPtr.Zero;
-
-        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
-
         private uint currentHotkey = 0;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
@@ -45,10 +27,8 @@ namespace Halo.MCC.Force.Checkpoints
 
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-        
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
-        
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, out int lpNumberOfBytesRead);
 
@@ -64,47 +44,40 @@ namespace Halo.MCC.Force.Checkpoints
         public MainWindow()
         {
             InitializeComponent();
-            _hookID = SetHook(_proc);
 
             // For printing the version number.
             DataContext = this;
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
-                //Hot # add some code to set preference hotkey on launch.
+                KeyBindingTextBox.Text = Properties.Settings.Default.HotKeyPreference;               
+            }
+
+            if (Properties.Settings.Default.LastGameSelected != string.Empty)
+            {
+                gameSelected = Properties.Settings.Default.LastGameSelected;
+                GameSelectedLabel.Content = Properties.Settings.Default.LastGameSelectedLabel;
+                friendlyGameName = Properties.Settings.Default.LastGameFriendlyName;
+                StatusTextBlock.Text = "Status: Awaiting input";
             }
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            UnhookWindowsHookEx(_hookID);
+            if (KeyBindingTextBox.Text != string.Empty)
+            {
+                Properties.Settings.Default.HotKeyPreference = KeyBindingTextBox.Text;
+            }
+
+            if (gameSelected != string.Empty)
+            {
+                Properties.Settings.Default.LastGameSelected = gameSelected;
+                Properties.Settings.Default.LastGameFriendlyName = friendlyGameName;
+                Properties.Settings.Default.LastGameSelectedLabel = (string)GameSelectedLabel.Content;
+            }
+
+            Properties.Settings.Default.Save();
             base.OnClosed(e);
-        }
-
-        private static IntPtr SetHook(LowLevelKeyboardProc proc)
-        {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule)
-            {
-                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
-                    GetModuleHandle(curModule.ModuleName), 0);
-            }
-        }
-
-        private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
-            {
-                int vkCode = Marshal.ReadInt32(lParam);
-                // Check if the key pressed matches your hotkey combination
-                // For example, if your hotkey is CTRL + F1:
-                if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control &&
-                    vkCode == KeyInterop.VirtualKeyFromKey(Key.F1))
-                {
-                    // Execute your code here
-                }
-            }
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
         private void ShowErrorWindow(string errorMessage)
@@ -257,6 +230,7 @@ namespace Halo.MCC.Force.Checkpoints
             base.OnSourceInitialized(e);
             var source = PresentationSource.FromVisual(this) as HwndSource;
             source?.AddHook(HwndHook);
+            RegisterCurrentHotkey();
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -283,7 +257,6 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            
             Close();
         }
 
@@ -294,7 +267,7 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void HaloCEButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo CE";
+            GameSelectedLabel.Content = $"Game selected: Halo CE";
             gameSelected = "Halo CE";
             friendlyGameName = "Halo: Combat Evolved";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -494,7 +467,7 @@ namespace Halo.MCC.Force.Checkpoints
 
             if (isRecordingInput)
             {
-                KeyBindingTextBox.Text = String.Empty;
+                KeyBindingTextBox.Text = string.Empty;
 
                 // Start recording.
                 KeyDown += OnKeyDownHandler;
