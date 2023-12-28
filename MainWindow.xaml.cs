@@ -17,18 +17,10 @@ namespace Halo.MCC.Force.Checkpoints
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
 
-        // Any unique ID will do for now.
-        private const int HOTKEY_ID = 9000;
-        private const uint MOD_NONE = 0x0000;
-
         // P/Invoke declarations for RegisterHotKey, UnregisterHotKey, opening the process, and reading/writing memory.
-        [DllImport("user32.dll")]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-
-        [DllImport("user32.dll")]
-        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+        
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, out int lpNumberOfBytesRead);
 
@@ -41,12 +33,85 @@ namespace Halo.MCC.Force.Checkpoints
         [DllImport("psapi.dll")]
         public static extern uint GetModuleBaseName(IntPtr hProcess, IntPtr hModule, StringBuilder lpBaseName, int nSize);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        private const int WH_KEYBOARD_LL = 13;
+        private const int WM_KEYDOWN = 0x0100;
+        private static LowLevelKeyboardProc _proc = HookCallback;
+        private static IntPtr _hookID = IntPtr.Zero;
+
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        private struct KBDLLHOOKSTRUCT
+        {
+            public uint vkCode;
+            public uint scanCode;
+            public uint flags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        private static IntPtr SetHook(LowLevelKeyboardProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            {
+                // Check if MainModule is not null before using it.
+                ProcessModule? curModule = curProcess.MainModule;
+                if (curModule == null)
+                {
+                    throw new InvalidOperationException("Main module could not be found.");
+                }
+
+                // Now it's safe to use curModule.ModuleName since we've checked for null.
+                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+                    GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            {
+                KBDLLHOOKSTRUCT kbStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
+                if (_instance != null && kbStruct.vkCode == _instance._currentHotkey)
+                {
+                    // Handle the key press
+                    // For example, you can raise an event or call a method here
+                    _instance.OnHotKeyPressed();
+                }
+            }
+            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+        }
+
+        public void InstallHook()
+        {
+            _hookID = SetHook(_proc);
+        }
+
+        public void UninstallHook()
+        {
+            UnhookWindowsHookEx(_hookID);
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+            _instance = this;
 
             // For printing the version number.
             DataContext = this;
+            InstallHook();
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
@@ -77,6 +142,12 @@ namespace Halo.MCC.Force.Checkpoints
             }
 
             Properties.Settings.Default.Save();
+
+            if (_hookID != IntPtr.Zero)
+            {
+                UninstallHook();
+            }
+            _instance = null;
             base.OnClosed(e);
         }
 
@@ -185,15 +256,13 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void RegisterCurrentHotkey()
         {
-            var helper = new WindowInteropHelper(this);
             string hotkeyName = KeyBindingTextBox.Text.ToUpper();
-            uint vk;
 
             // Convert the key name to a Key enumeration, so it can actually be used.
             try
             {
                 Key key = (Key)Enum.Parse(typeof(Key), hotkeyName);
-                vk = (uint)KeyInterop.VirtualKeyFromKey(key);
+                _currentHotkey = (uint)KeyInterop.VirtualKeyFromKey(key);
             }
             catch
             {
@@ -203,45 +272,26 @@ namespace Halo.MCC.Force.Checkpoints
                 return;
             }
 
-            // Register the hotkey.
-            if (!RegisterHotKey(helper.Handle, HOTKEY_ID, MOD_NONE, vk))
+            // Set up the hook if it's not already set
+            if (_hookID == IntPtr.Zero)
             {
-                ShowErrorWindow("Failed to register hotkey.");
-            }
-            else
-            {
-                // Store the current hotkey.
-                currentHotkey = vk;
+                InstallHook();
             }
         }
         private void UnregisterCurrentHotkey()
         {
-            if (currentHotkey != 0)
-            {
-                var helper = new WindowInteropHelper(this);
-                UnregisterHotKey(helper.Handle, HOTKEY_ID);
-
-                // Reset the current hotkey.
-                currentHotkey = 0;
-            }
+            _currentHotkey = 0;
         }
+
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
             var source = PresentationSource.FromVisual(this) as HwndSource;
-            source?.AddHook(HwndHook);
-            RegisterCurrentHotkey();
-        }
 
-        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            const int WM_HOTKEY = 0x0312;
-            if (msg == WM_HOTKEY && wParam.ToInt32() == HOTKEY_ID)
+            if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
-                OnHotKeyPressed();
-                handled = true;
+                RegisterCurrentHotkey();
             }
-            return IntPtr.Zero;
         }
 
         private void OnHotKeyPressed()
@@ -364,7 +414,9 @@ namespace Halo.MCC.Force.Checkpoints
 
                 if (processId == -1)
                 {
+                    UnregisterCurrentHotkey();
                     ShowErrorWindow($"{friendlyGameName} is not running.");
+                    RegisterCurrentHotkey();
                     return;
                 }
 
@@ -459,6 +511,8 @@ namespace Halo.MCC.Force.Checkpoints
         }
 
         private bool isRecordingInput = false;
+        private uint _currentHotkey;
+        private static MainWindow? _instance;
 
         private void RecordInputButton_Click(object sender, RoutedEventArgs e)
         {
