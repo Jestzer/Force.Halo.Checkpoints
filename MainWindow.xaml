@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Halo.MCC.Force.Checkpoints"
         mc:Ignorable="d"
         Title="Halo Force Checkpoints" Height="500" Width="400"
-        WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterOwner">
+        WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterScreen">
     <Border BorderBrush="Gray" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
