@@ -23,8 +23,8 @@
             </Border>
             <Grid Background="#FF2D2B2B" Grid.Row="1">
                 <Grid Margin="32,10,45,58">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,-19,0">
-                    <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap"
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-4,0,-15,0">
+                        <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap"
                Text="Errors will appear in this pop-up window." Foreground="White" 
                FontSize="14" TextAlignment="Center" HorizontalAlignment="Center" 
                VerticalAlignment="Center"/>
@@ -36,7 +36,7 @@
                         GitHub
                     </Hyperlink>.
                 </TextBlock>
-                <Button x:Name="OKButton" Content="OK" HorizontalAlignment="Left" Margin="142,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
+                <Button x:Name="OKButton" Content="OK" HorizontalAlignment="Center" Margin="0,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
