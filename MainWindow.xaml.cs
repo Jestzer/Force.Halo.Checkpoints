@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,8 +14,13 @@ namespace Halo.MCC.Force.Checkpoints
         private uint currentHotkey = 0;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
+        private Thread inputThread;
 
-        // P/Invoke declarations for RegisterHotKey, UnregisterHotKey, opening the process, and reading/writing memory.
+        // P/Invoke declarations for the hotkey hook, opening the process, reading/writing memory & and XInput.
+
+        [DllImport("xinput1_4.dll")]
+        public static extern int XInputGetState(int dwUserIndex, ref XInputState pState);
+
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
         
@@ -104,6 +107,27 @@ namespace Halo.MCC.Force.Checkpoints
             UnhookWindowsHookEx(_hookID);
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct XInputState
+        {
+            public int dwPacketNumber;
+            public XInputGamepad Gamepad;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct XInputGamepad
+        {
+            public ushort wButtons;
+            public byte bLeftTrigger;
+            public byte bRightTrigger;
+            public short sThumbLX;
+            public short sThumbLY;
+            public short sThumbRX;
+            public short sThumbRY;
+        }
+
+        public const int XINPUT_GAMEPAD_A = 0x1000;     
+
         public MainWindow()
         {
             InitializeComponent();
@@ -124,6 +148,32 @@ namespace Halo.MCC.Force.Checkpoints
                 GameSelectedLabel.Content = Properties.Settings.Default.LastGameSelectedLabel;
                 friendlyGameName = Properties.Settings.Default.LastGameFriendlyName;
                 StatusTextBlock.Text = "Status: Awaiting input";
+            }
+
+            // Start the input check on a background thread
+            inputThread = new Thread(CheckControllerInput);
+            inputThread.IsBackground = true;
+            inputThread.Start();
+        }
+
+        private void CheckControllerInput()
+        {
+            while (true)
+            {
+                XInputState state = new XInputState();
+                int result = XInputGetState(0, ref state); // 0 is the first controller.
+
+                if (result == 0) // Controller is connected.
+                {
+                    if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                        });
+                    }
+                }
+                Thread.Sleep(100); // Sleep to prevent high CPU usage.
             }
         }
 
