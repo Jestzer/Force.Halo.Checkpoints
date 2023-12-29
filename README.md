@@ -2,7 +2,7 @@
 You must turn off Easy Anti-Cheat or Anti-Cheat before using this program. You will be banned from these games if you fail to do so.
 
 Features:
-- Forces a checkpoint to occur in campaign. This is useful for practicing mission completion strategies.
+- Forces a checkpoint to occur in the campaign of Windows Halo games. This is useful for practicing mission completion strategies.
 - Support all games in the MCC, the original Halo CE, Halo Custom Edition, and Halo 2 Vista with and without the Silent Cartograpther mod.
 - Can bind a keyboard key or controller button/trigger to force a checkpoint, so you don't have to switch to the program to force a checkpoint.
 

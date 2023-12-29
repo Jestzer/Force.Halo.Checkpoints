@@ -70,5 +70,53 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
                 this["LastGameFriendlyName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public ushort ControllerButtonPreference {
+            get {
+                return ((ushort)(this["ControllerButtonPreference"]));
+            }
+            set {
+                this["ControllerButtonPreference"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ControllerTriggerPreference {
+            get {
+                return ((string)(this["ControllerTriggerPreference"]));
+            }
+            set {
+                this["ControllerTriggerPreference"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ControllerButtonPreferenceString {
+            get {
+                return ((string)(this["ControllerButtonPreferenceString"]));
+            }
+            set {
+                this["ControllerButtonPreferenceString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsControllerButtonSelectedPreference {
+            get {
+                return ((bool)(this["IsControllerButtonSelectedPreference"]));
+            }
+            set {
+                this["IsControllerButtonSelectedPreference"] = value;
+            }
+        }
     }
 }

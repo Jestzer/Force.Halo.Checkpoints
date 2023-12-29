@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 
@@ -75,10 +77,11 @@ namespace Halo.MCC.Force.Checkpoints
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
             using Process curProcess = Process.GetCurrentProcess();
+
             // Check if MainModule is not null before using it.
             ProcessModule? curModule = curProcess.MainModule ?? throw new InvalidOperationException("Main module could not be found.");
 
-            // Now it's safe to use curModule.ModuleName since we've checked for null.
+            // Now it's safe to use curModule.ModuleName, since we've checked if it's null.
             return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
                 GetModuleHandle(curModule.ModuleName), 0);
         }
@@ -91,7 +94,6 @@ namespace Halo.MCC.Force.Checkpoints
                 if (_instance != null && kbStruct.vkCode == _instance._currentHotkey)
                 {
                     // Handle the key press
-                    // For example, you can raise an event or call a method here
                     _instance.OnHotKeyPressed();
                 }
             }
@@ -165,54 +167,86 @@ namespace Halo.MCC.Force.Checkpoints
                 StatusTextBlock.Text = "Status: Awaiting input";
             }
 
+            if (Properties.Settings.Default.IsControllerButtonSelectedPreference == true)
+            {
+                isControllerButtonSelected = true;
+                isRecordControllerInputDone = true;
+                controllerButtonSelected = Properties.Settings.Default.ControllerButtonPreference;
+                controllerTriggerSelected = Properties.Settings.Default.ControllerTriggerPreference;
+                ControllerButtonBindingTextBlock.Text = Properties.Settings.Default.ControllerButtonPreferenceString;
+            }
+
             // Start the input check on a background thread
             inputThread = new Thread(CheckControllerInput);
             inputThread.IsBackground = true;
             inputThread.Start();
         }
 
-        private void CheckControllerInput()
+        private async void CheckControllerInput()
         {
             while (true)
             {
-                if (isControllerButtonSelected && isRecordControllerInputDone)
+                if (!isButtonCoolDownHappening)
                 {
-                    XInputState state = new();
-                    int result = XInputGetState(0, ref state); // 0 is the first controller.
 
-                    if (result == 0) // Controller is connected.
+                    if (isControllerButtonSelected && isRecordControllerInputDone)
                     {
-                        if ((state.Gamepad.wButtons & controllerButtonSelected) != 0)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                ForceCheckpointButton_Click(this, new RoutedEventArgs());
-                            });
-                        }
-                        // Triggers need to handled separately.
-                        else if (controllerTriggerSelected == "Left Trigger")
-                        {
-                            if (state.Gamepad.bLeftTrigger > triggerThreshold)
-                            {
-                                Dispatcher.Invoke(() =>
-                                {
-                                    ForceCheckpointButton_Click(this, new RoutedEventArgs());
-                                });
+                        XInputState state = new();
+                        int result = XInputGetState(0, ref state); // 0 is the first controller.
 
-                            }
-                        }
-                        else if (controllerTriggerSelected == "Right Trigger")
+                        if (result == 0) // Controller is connected.
                         {
-                            if (state.Gamepad.bRightTrigger > triggerThreshold)
+                            if ((state.Gamepad.wButtons & controllerButtonSelected) != 0)
                             {
-                                Dispatcher.Invoke(() =>
+                                _ = Dispatcher.Invoke(() =>
                                 {
                                     ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                                    return Task.CompletedTask;
                                 });
                             }
+                            // Triggers need to handled separately.
+                            else if (controllerTriggerSelected == "Left Trigger")
+                            {
+                                if (state.Gamepad.bLeftTrigger > triggerThreshold)
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                                    });
+                                }
+                            }
+                            else if (controllerTriggerSelected == "Right Trigger")
+                            {
+                                if (state.Gamepad.bRightTrigger > triggerThreshold)
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                                    });
+                                }
+                            }
                         }
+                        // Sleep to prevent high CPU usage.
+                        Thread.Sleep(100);
                     }
-                    Thread.Sleep(100); // Sleep to prevent high CPU usage.
+                }
+                // Prevent the user from triggering a checkpoint while selecting their hotkeys. Wait 2 seconds.
+                else
+                {
+                    Dispatcher.Invoke(() => // Gotta use these to play around with the UI.
+                    {
+                        RecordControllerInputButton.Content = "Please wait 2 seconds.";
+                        RecordControllerInputButton.IsEnabled = false;
+                    });
+
+                    await Task.Delay(2000);
+                    isButtonCoolDownHappening = false;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        RecordControllerInputButton.Content = "Start Recording Input";
+                        RecordControllerInputButton.IsEnabled = true;
+                    });
                 }
             }
         }
@@ -229,6 +263,14 @@ namespace Halo.MCC.Force.Checkpoints
                 Properties.Settings.Default.LastGameSelected = gameSelected;
                 Properties.Settings.Default.LastGameFriendlyName = friendlyGameName;
                 Properties.Settings.Default.LastGameSelectedLabel = (string)GameSelectedLabel.Content;
+            }
+
+            if (isControllerButtonSelected)
+            {
+                Properties.Settings.Default.IsControllerButtonSelectedPreference = true;
+                Properties.Settings.Default.ControllerButtonPreference = controllerButtonSelected;
+                Properties.Settings.Default.ControllerTriggerPreference = controllerTriggerSelected;
+                Properties.Settings.Default.ControllerButtonPreferenceString = ControllerButtonBindingTextBlock.Text;
             }
 
             Properties.Settings.Default.Save();
@@ -305,7 +347,7 @@ namespace Halo.MCC.Force.Checkpoints
                     latestVersionString = latestVersionString.TrimStart('v');
 
                     // Parse the version string.
-                    Version latestVersion = new Version(latestVersionString);
+                    Version latestVersion = new(latestVersionString);
 
                     // Compare the current version with the latest version.
                     if (currentVersion.CompareTo(latestVersion) < 0)
@@ -477,17 +519,8 @@ namespace Halo.MCC.Force.Checkpoints
             StatusTextBlock.Text = "Status: Awaiting input";
         }
 
-        private async void ForceCheckpoint(string gameSelected, string dllName, int offset)
+        private void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
-            // Prevent the user from triggering a checkpoint while selecting their hotkeys.
-            if (isButtonCoolDownHappening)
-            {
-                // Wait 1 second.
-                await Task.Delay(1000);
-                isButtonCoolDownHappening = false;
-                return;
-            }
-
             try
             {
                 string processName = string.Empty;
@@ -737,15 +770,52 @@ namespace Halo.MCC.Force.Checkpoints
                 { XINPUT_GAMEPAD_Y, "Y" }
             };
 
+        private CancellationTokenSource? cancellationTokenSource;
+        private bool isRecordingControllerInput = false;
+        private Thread? controllerInputCheckThread;
+
         private void RecordControllerInputButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Ensure that 'sender' is indeed a Button.
+            if (sender is Button recordButton)
+            {
+                if (!isRecordingControllerInput)
+                {
+                    recordButton.Content = "Stop Recording Input";
+                    isRecordingControllerInput = true;
+
+                    cancellationTokenSource = new CancellationTokenSource();
+                    controllerInputCheckThread = new Thread(() => RecordControllerInput(cancellationTokenSource.Token))
+                    {
+                        IsBackground = true
+                    };
+                    controllerInputCheckThread.Start();
+                }
+                else
+                {
+                    // Signal the thread to stop
+                    cancellationTokenSource?.Cancel();
+                    isRecordingControllerInput = false;
+
+                    // Update the button content back to "Start Recording Input"
+                    recordButton.Content = "Start Recording Input";
+                }
+            }
+            else
+            {
+                ShowErrorWindow("How did you end up here?!");
+            }
+        }
+
+        private void RecordControllerInput(CancellationToken token)
         {
             isControllerButtonSelected = false;
             isRecordControllerInputDone = false;
             isButtonCoolDownHappening = false;
-            controllerTriggerSelected = string.Empty;
-            controllerButtonSelected = 0;
+/*            controllerTriggerSelected = string.Empty;
+            controllerButtonSelected = 0;*/
 
-            while (!isControllerButtonSelected)
+            while (!isControllerButtonSelected && !token.IsCancellationRequested)
             {
                 XInputState state = new();
                 int result = XInputGetState(0, ref state);
@@ -783,6 +853,7 @@ namespace Halo.MCC.Force.Checkpoints
                         });
                         break;
                     }
+
                     if (state.Gamepad.bRightTrigger > triggerThreshold)
                     {
                         Dispatcher.Invoke(() =>
@@ -795,6 +866,11 @@ namespace Halo.MCC.Force.Checkpoints
                         });
                         break;
                     }
+
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
                 else
                 {
@@ -802,11 +878,24 @@ namespace Halo.MCC.Force.Checkpoints
                     {
                         ShowErrorWindow("Your controller is either disconnected or unsupported.");
                     });
-                    return;
+                    break;
                 }
                 Thread.Sleep(100);
             }
-            isRecordControllerInputDone = true;
+            Dispatcher.Invoke(() =>
+            {
+                // If a button was selected, reset the recording flag.
+                if (isControllerButtonSelected)
+                {
+                    isRecordingControllerInput = false;
+                    RecordControllerInputButton.Content = "Please wait 2 seconds.";
+                }
+                else if (controllerButtonSelected != 0)
+                {
+                    isControllerButtonSelected = true;
+                }
+                isRecordControllerInputDone = true;
+            });
         }
     }
 }
