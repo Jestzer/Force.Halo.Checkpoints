@@ -11,19 +11,26 @@ namespace Halo.MCC.Force.Checkpoints
 {
     public partial class MainWindow : Window
     {
-        private uint currentHotkey = 0;
+        private readonly uint currentHotkey = 0;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
-        private Thread inputThread;
+        private readonly Thread inputThread;
+        private ushort controllerButtonSelected = 0;
+        public string controllerTriggerSelected = string.Empty;
+        bool isControllerButtonSelected = false;
+        bool isRecordControllerInputDone = true;
+        bool isButtonCoolDownHappening = false;
+
+        // I believe this it being set halfway depressed.
+        const byte triggerThreshold = 128;
 
         // P/Invoke declarations for the hotkey hook, opening the process, reading/writing memory & and XInput.
-
         [DllImport("xinput1_4.dll")]
         public static extern int XInputGetState(int dwUserIndex, ref XInputState pState);
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
-        
+
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, out int lpNumberOfBytesRead);
 
@@ -46,7 +53,7 @@ namespace Halo.MCC.Force.Checkpoints
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
 
         private const int WH_KEYBOARD_LL = 13;
@@ -67,19 +74,13 @@ namespace Halo.MCC.Force.Checkpoints
 
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
         {
-            using (Process curProcess = Process.GetCurrentProcess())
-            {
-                // Check if MainModule is not null before using it.
-                ProcessModule? curModule = curProcess.MainModule;
-                if (curModule == null)
-                {
-                    throw new InvalidOperationException("Main module could not be found.");
-                }
+            using Process curProcess = Process.GetCurrentProcess();
+            // Check if MainModule is not null before using it.
+            ProcessModule? curModule = curProcess.MainModule ?? throw new InvalidOperationException("Main module could not be found.");
 
-                // Now it's safe to use curModule.ModuleName since we've checked for null.
-                return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
-                    GetModuleHandle(curModule.ModuleName), 0);
-            }
+            // Now it's safe to use curModule.ModuleName since we've checked for null.
+            return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+                GetModuleHandle(curModule.ModuleName), 0);
         }
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -97,12 +98,12 @@ namespace Halo.MCC.Force.Checkpoints
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
-        public void InstallHook()
+        public static void InstallHook()
         {
             _hookID = SetHook(_proc);
         }
 
-        public void UninstallHook()
+        public static void UninstallHook()
         {
             UnhookWindowsHookEx(_hookID);
         }
@@ -126,7 +127,20 @@ namespace Halo.MCC.Force.Checkpoints
             public short sThumbRY;
         }
 
-        public const int XINPUT_GAMEPAD_A = 0x1000;     
+        public const int XINPUT_GAMEPAD_DPAD_UP = 0x0001;
+        public const int XINPUT_GAMEPAD_DPAD_DOWN = 0x0002;
+        public const int XINPUT_GAMEPAD_DPAD_LEFT = 0x0004;
+        public const int XINPUT_GAMEPAD_DPAD_RIGHT = 0x0008;
+        public const int XINPUT_GAMEPAD_START = 0x0010;
+        public const int XINPUT_GAMEPAD_BACK = 0x0020;
+        public const int XINPUT_GAMEPAD_LEFT_THUMB = 0x0040;
+        public const int XINPUT_GAMEPAD_RIGHT_THUMB = 0x0080;
+        public const int XINPUT_GAMEPAD_LEFT_SHOULDER = 0x0100;
+        public const int XINPUT_GAMEPAD_RIGHT_SHOULDER = 0x0200;
+        public const int XINPUT_GAMEPAD_A = 0x1000;
+        public const int XINPUT_GAMEPAD_B = 0x2000;
+        public const int XINPUT_GAMEPAD_X = 0x4000;
+        public const int XINPUT_GAMEPAD_Y = 0x8000;
 
         public MainWindow()
         {
@@ -135,11 +149,12 @@ namespace Halo.MCC.Force.Checkpoints
 
             // For printing the version number.
             DataContext = this;
+
             InstallHook();
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
-                KeyBindingTextBox.Text = Properties.Settings.Default.HotKeyPreference;               
+                KeyBindingTextBox.Text = Properties.Settings.Default.HotKeyPreference;
             }
 
             if (Properties.Settings.Default.LastGameSelected != string.Empty)
@@ -160,20 +175,45 @@ namespace Halo.MCC.Force.Checkpoints
         {
             while (true)
             {
-                XInputState state = new XInputState();
-                int result = XInputGetState(0, ref state); // 0 is the first controller.
-
-                if (result == 0) // Controller is connected.
+                if (isControllerButtonSelected && isRecordControllerInputDone)
                 {
-                    if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0)
+                    XInputState state = new();
+                    int result = XInputGetState(0, ref state); // 0 is the first controller.
+
+                    if (result == 0) // Controller is connected.
                     {
-                        Dispatcher.Invoke(() =>
+                        if ((state.Gamepad.wButtons & controllerButtonSelected) != 0)
                         {
-                            ForceCheckpointButton_Click(this, new RoutedEventArgs());
-                        });
+                            Dispatcher.Invoke(() =>
+                            {
+                                ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                            });
+                        }
+                        // Triggers need to handled separately.
+                        else if (controllerTriggerSelected == "Left Trigger")
+                        {
+                            if (state.Gamepad.bLeftTrigger > triggerThreshold)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                                });
+
+                            }
+                        }
+                        else if (controllerTriggerSelected == "Right Trigger")
+                        {
+                            if (state.Gamepad.bRightTrigger > triggerThreshold)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    ForceCheckpointButton_Click(this, new RoutedEventArgs());
+                                });
+                            }
+                        }
                     }
+                    Thread.Sleep(100); // Sleep to prevent high CPU usage.
                 }
-                Thread.Sleep(100); // Sleep to prevent high CPU usage.
             }
         }
 
@@ -336,7 +376,7 @@ namespace Halo.MCC.Force.Checkpoints
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            var source = PresentationSource.FromVisual(this) as HwndSource;
+            _ = PresentationSource.FromVisual(this) as HwndSource;
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
@@ -437,8 +477,17 @@ namespace Halo.MCC.Force.Checkpoints
             StatusTextBlock.Text = "Status: Awaiting input";
         }
 
-        private void ForceCheckpoint(string gameSelected, string dllName, int offset)
+        private async void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
+            // Prevent the user from triggering a checkpoint while selecting their hotkeys.
+            if (isButtonCoolDownHappening)
+            {
+                // Wait 1 second.
+                await Task.Delay(1000);
+                isButtonCoolDownHappening = false;
+                return;
+            }
+
             try
             {
                 string processName = string.Empty;
@@ -566,6 +615,9 @@ namespace Halo.MCC.Force.Checkpoints
 
         private void RecordInputButton_Click(object sender, RoutedEventArgs e)
         {
+            // Prevent accidental checkpoint trigger.
+            UnregisterCurrentHotkey();
+
             // Toggle the recording state.
             isRecordingInput = !isRecordingInput;
 
@@ -665,6 +717,96 @@ namespace Halo.MCC.Force.Checkpoints
                 }
             }
             return modBaseAddr;
+        }
+
+        private readonly Dictionary<ushort, string> controllerButtonMappings = new Dictionary<ushort, string>
+            {
+                { XINPUT_GAMEPAD_DPAD_UP, "DPad Up" },
+                { XINPUT_GAMEPAD_DPAD_DOWN, "DPad Down" },
+                { XINPUT_GAMEPAD_DPAD_LEFT, "DPad Left" },
+                { XINPUT_GAMEPAD_DPAD_RIGHT, "DPad Right" },
+                { XINPUT_GAMEPAD_START, "Start" },
+                { XINPUT_GAMEPAD_BACK, "Back" },
+                { XINPUT_GAMEPAD_LEFT_THUMB, "Left Thumbstick" },
+                { XINPUT_GAMEPAD_RIGHT_THUMB, "Right Thumbstick" },
+                { XINPUT_GAMEPAD_LEFT_SHOULDER, "Left Bumper" },
+                { XINPUT_GAMEPAD_RIGHT_SHOULDER, "Right Bumper" },
+                { XINPUT_GAMEPAD_A, "A" },
+                { XINPUT_GAMEPAD_B, "B" },
+                { XINPUT_GAMEPAD_X, "X" },
+                { XINPUT_GAMEPAD_Y, "Y" }
+            };
+
+        private void RecordControllerInputButton_Click(object sender, RoutedEventArgs e)
+        {
+            isControllerButtonSelected = false;
+            isRecordControllerInputDone = false;
+            isButtonCoolDownHappening = false;
+            controllerTriggerSelected = string.Empty;
+            controllerButtonSelected = 0;
+
+            while (!isControllerButtonSelected)
+            {
+                XInputState state = new();
+                int result = XInputGetState(0, ref state);
+
+                if (result == 0)
+                {
+                    foreach (var buttonMapping in controllerButtonMappings)
+                    {
+                        if ((state.Gamepad.wButtons & buttonMapping.Key) != 0)
+                        {
+                            ushort buttonValue = buttonMapping.Key;
+                            string buttonName = buttonMapping.Value;
+                            Dispatcher.Invoke(() =>
+                            {
+                                controllerButtonSelected = buttonValue;
+                                ControllerButtonBindingTextBlock.Text = buttonName;
+                                controllerTriggerSelected = string.Empty;
+                                isControllerButtonSelected = true;
+                                isButtonCoolDownHappening = true;
+                            });
+                            break;
+                        }
+                    }
+
+                    // Triggers aren't in the dictionary because they aren't boolean values.
+                    if (state.Gamepad.bLeftTrigger > triggerThreshold)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            controllerButtonSelected = 0;
+                            controllerTriggerSelected = "Left Trigger";
+                            ControllerButtonBindingTextBlock.Text = controllerTriggerSelected;
+                            isControllerButtonSelected = true;
+                            isButtonCoolDownHappening = true;
+                        });
+                        break;
+                    }
+                    if (state.Gamepad.bRightTrigger > triggerThreshold)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            controllerButtonSelected = 0;
+                            controllerTriggerSelected = "Right Trigger";
+                            ControllerButtonBindingTextBlock.Text = controllerTriggerSelected;
+                            isControllerButtonSelected = true;
+                            isButtonCoolDownHappening = true;
+                        });
+                        break;
+                    }
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ShowErrorWindow("Your controller is either disconnected or unsupported.");
+                    });
+                    return;
+                }
+                Thread.Sleep(100);
+            }
+            isRecordControllerInputDone = true;
         }
     }
 }
