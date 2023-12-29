@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Halo.MCC.Force.Checkpoints.sln",
+                "${workspaceFolder}/Force.Halo.Checkpoints.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Halo.MCC.Force.Checkpoints.sln",
+                "${workspaceFolder}/Force.Halo.Checkpoints.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Halo.MCC.Force.Checkpoints.sln"
+                "${workspaceFolder}/Force.Halo.Checkpoints.sln"
             ],
             "problemMatcher": "$msCompile"
         }

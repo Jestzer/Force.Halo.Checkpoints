@@ -5,11 +5,10 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace Halo.MCC.Force.Checkpoints
+namespace Force.Halo.Checkpoints
 {
     public partial class MainWindow : Window
     {
@@ -322,13 +321,13 @@ namespace Halo.MCC.Force.Checkpoints
             Version currentVersion = new(PackageVersion);
 
             // GitHub API URL for the latest release.
-            string latestReleaseUrl = "https://api.github.com/repos/Jestzer/Halo.Force.Checkpoints/releases/latest";
+            string latestReleaseUrl = "https://api.github.com/repos/Jestzer/Force.Halo.Checkpoints/releases/latest";
 
             // Use HttpClient to fetch the latest release data.
             using HttpClient client = new();
 
             // GitHub API requires a user-agent. I'm adding the extra headers to reduce HTTP error 403s.
-            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Halo.Force.Checkpoints", PackageVersion));
+            client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Force.Halo.Checkpoints", PackageVersion));
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
             try
@@ -812,8 +811,8 @@ namespace Halo.MCC.Force.Checkpoints
             isControllerButtonSelected = false;
             isRecordControllerInputDone = false;
             isButtonCoolDownHappening = false;
-/*            controllerTriggerSelected = string.Empty;
-            controllerButtonSelected = 0;*/
+            /*            controllerTriggerSelected = string.Empty;
+                        controllerButtonSelected = 0;*/
 
             while (!isControllerButtonSelected && !token.IsCancellationRequested)
             {

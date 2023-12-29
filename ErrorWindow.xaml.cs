@@ -2,7 +2,8 @@
 using System.Windows.Input;
 using System.Windows.Navigation;
 
-namespace Halo.MCC.Force.Checkpoints
+
+namespace Force.Halo.Checkpoints
 {
     public partial class ErrorWindow : Window
     {
