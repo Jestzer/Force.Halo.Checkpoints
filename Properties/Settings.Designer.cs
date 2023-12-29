@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Halo.MCC.Force.Checkpoints.Properties {
+namespace Force.Halo.Checkpoints.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,18 +20,6 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string HotKeyPreference {
-            get {
-                return ((string)(this["HotKeyPreference"]));
-            }
-            set {
-                this["HotKeyPreference"] = value;
             }
         }
         
@@ -86,24 +74,24 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ControllerTriggerPreference {
-            get {
-                return ((string)(this["ControllerTriggerPreference"]));
-            }
-            set {
-                this["ControllerTriggerPreference"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ControllerButtonPreferenceString {
             get {
                 return ((string)(this["ControllerButtonPreferenceString"]));
             }
             set {
                 this["ControllerButtonPreferenceString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ControllerTriggerPreference {
+            get {
+                return ((string)(this["ControllerTriggerPreference"]));
+            }
+            set {
+                this["ControllerTriggerPreference"] = value;
             }
         }
         
@@ -116,6 +104,18 @@ namespace Halo.MCC.Force.Checkpoints.Properties {
             }
             set {
                 this["IsControllerButtonSelectedPreference"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string HotKeyPreference {
+            get {
+                return ((string)(this["HotKeyPreference"]));
+            }
+            set {
+                this["HotKeyPreference"] = value;
             }
         }
     }

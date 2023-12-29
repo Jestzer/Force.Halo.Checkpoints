@@ -1,7 +1,7 @@
-﻿<Application x:Class="Halo.MCC.Force.Checkpoints.App"
+﻿<Application x:Class="Force.Halo.Checkpoints.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Halo.MCC.Force.Checkpoints"
+             xmlns:local="clr-namespace:Force.Halo.Checkpoints"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

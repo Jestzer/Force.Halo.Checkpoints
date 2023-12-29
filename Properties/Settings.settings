@@ -1,10 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Halo.MCC.Force.Checkpoints.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Force.Halo.Checkpoints.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="HotKeyPreference" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="LastGameSelected" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -17,14 +14,17 @@
     <Setting Name="ControllerButtonPreference" Type="System.UInt16" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="ControllerTriggerPreference" Type="System.String" Scope="User">
+    <Setting Name="ControllerButtonPreferenceString" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ControllerButtonPreferenceString" Type="System.String" Scope="User">
+    <Setting Name="ControllerTriggerPreference" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IsControllerButtonSelectedPreference" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HotKeyPreference" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

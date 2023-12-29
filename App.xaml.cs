@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace Halo.MCC.Force.Checkpoints
+namespace Force.Halo.Checkpoints
 {
     /// <summary>
     /// Interaction logic for App.xaml

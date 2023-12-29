@@ -1,4 +1,4 @@
-# Halo Force Checkpoints
+# Force Halo Checkpoints
 _**You must turn off Easy Anti-Cheat or Anti-Cheat before using this program. You will be banned from these games if you fail to do so. If you are using this in a competive setting, you must disclose so prior to using the program.**_
 
 Features:
