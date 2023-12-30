@@ -15,6 +15,7 @@ Notes:
 - Should support Windows 8 and newer. I have only tested it on Windows 11. If you get XInput 1.4 working on Windows 7, then it may work there too.
 
 To-do:
+- Make it work with the Windows Store version of MCC (assuming it doesn't ATM)
 - Make sure everything actually works.
 - Make things more fool-proof.
 - Make more error messages.
