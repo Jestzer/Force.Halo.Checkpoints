@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,11 +17,13 @@ namespace Force.Halo.Checkpoints
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
         private readonly Thread inputThread;
+        private readonly Thread antiCheatCheckThread;
         private ushort controllerButtonSelected = 0;
         public string controllerTriggerSelected = string.Empty;
         bool isControllerButtonSelected = false;
         bool isRecordControllerInputDone = true;
         bool isButtonCoolDownHappening = false;
+        bool isProgramClosing = false;
 
         // I believe this it being set halfway depressed.
         const byte triggerThreshold = 128;
@@ -175,10 +178,40 @@ namespace Force.Halo.Checkpoints
                 ControllerButtonBindingTextBlock.Text = Properties.Settings.Default.ControllerButtonPreferenceString;
             }
 
-            // Start the input check on a background thread
+            // Start the input check on a background thread.
             inputThread = new Thread(CheckControllerInput);
             inputThread.IsBackground = true;
             inputThread.Start();
+
+            antiCheatCheckThread = new Thread(CheckForAntiCheatRunning);
+            antiCheatCheckThread.IsBackground = true;
+            antiCheatCheckThread.Start();
+        }
+
+        private void CheckForAntiCheatRunning()
+        {
+            while (isProgramClosing == false)
+            {
+                string processName = "notepad";
+                int processId = GetProcessIdByName(processName);
+
+                if (processId != -1)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ForceCheckpointButton.Content = "Easy Anti-Cheat is running!";
+                        ForceCheckpointButton.IsEnabled = false;
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ForceCheckpointButton.Content = "Force Checkpoint";
+                        ForceCheckpointButton.IsEnabled = true;
+                    });
+                }
+            }
         }
 
         private async void CheckControllerInput()
@@ -252,6 +285,8 @@ namespace Force.Halo.Checkpoints
 
         protected override void OnClosed(EventArgs e)
         {
+            isProgramClosing = true;
+
             if (KeyBindingTextBox.Text != string.Empty)
             {
                 Properties.Settings.Default.HotKeyPreference = KeyBindingTextBox.Text;
@@ -520,6 +555,8 @@ namespace Force.Halo.Checkpoints
 
         private void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
+
+
             try
             {
                 string processName = string.Empty;
@@ -598,46 +635,53 @@ namespace Force.Halo.Checkpoints
 
         private void ForceCheckpointButton_Click(object sender, RoutedEventArgs e)
         {
-            if (gameSelected == "Halo CE")
+            if (ForceCheckpointButton.IsEnabled == true)
             {
-                ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
-            }
-            else if (gameSelected == "Halo 2")
-            {
-                ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
-            }
-            else if (gameSelected == "Halo 3")
-            {
-                ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
-            }
-            else if (gameSelected == "Halo 4")
-            {
-                ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
-            }
-            else if (gameSelected == "Halo Reach")
-            {
-                ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
-            }
-            else if (gameSelected == "Halo 3 ODST")
-            {
-                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
-            }
-            else if (gameSelected == "Halo CE OG")
-            {
-                ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
-            }
-            else if (gameSelected == "Halo Custom Edition")
-            {
-                ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
-            }
-            else if (gameSelected == "Halo 2 Vista")
-            {
-                ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                if (gameSelected == "Halo CE")
+                {
+                    ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                }
+                else if (gameSelected == "Halo 2")
+                {
+                    ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                }
+                else if (gameSelected == "Halo 3")
+                {
+                    ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                }
+                else if (gameSelected == "Halo 4")
+                {
+                    ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                }
+                else if (gameSelected == "Halo Reach")
+                {
+                    ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                }
+                else if (gameSelected == "Halo 3 ODST")
+                {
+                    ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                }
+                else if (gameSelected == "Halo CE OG")
+                {
+                    ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+                }
+                else if (gameSelected == "Halo Custom Edition")
+                {
+                    ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
+                }
+                else if (gameSelected == "Halo 2 Vista")
+                {
+                    ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                }
+                else
+                {
+                    StatusTextBlock.Text = "Status: Please select a game first!";
+                    ShowErrorWindow("Select a game first.");
+                }
             }
             else
             {
-                StatusTextBlock.Text = "Status: Please select a game first!";
-                ShowErrorWindow("Select a game first.");
+                ShowErrorWindow("Easy Anti-Cheat is running!");
             }
         }
 
@@ -811,8 +855,6 @@ namespace Force.Halo.Checkpoints
             isControllerButtonSelected = false;
             isRecordControllerInputDone = false;
             isButtonCoolDownHappening = false;
-            /*            controllerTriggerSelected = string.Empty;
-                        controllerButtonSelected = 0;*/
 
             while (!isControllerButtonSelected && !token.IsCancellationRequested)
             {
@@ -879,7 +921,6 @@ namespace Force.Halo.Checkpoints
                     });
                     break;
                 }
-                Thread.Sleep(100);
             }
             Dispatcher.Invoke(() =>
             {

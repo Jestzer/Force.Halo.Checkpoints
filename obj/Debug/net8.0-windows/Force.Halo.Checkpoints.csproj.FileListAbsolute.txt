@@ -21,3 +21,27 @@ C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows
 C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.pdb
 C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.genruntimeconfig.cache
 C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\ref\Force.Halo.Checkpoints.dll
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.exe
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.dll.config
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.deps.json
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.runtimeconfig.json
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.dll
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\bin\Debug\net8.0-windows\Force.Halo.Checkpoints.pdb
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\ErrorWindow.g.cs
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints_MarkupCompile.cache
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints_MarkupCompile.lref
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\ErrorWindow.baml
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.g.resources
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.AssemblyInfoInputs.cache
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.AssemblyInfo.cs
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.csproj.CoreCompileInputs.cache
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.sourcelink.json
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.dll
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\refint\Force.Halo.Checkpoints.dll
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.pdb
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.genruntimeconfig.cache
+C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\ref\Force.Halo.Checkpoints.dll

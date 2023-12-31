@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj": {}
+    "C:\\Users\\jbuonopa\\My Programs\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj": {}
   },
   "projects": {
-    "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj": {
+    "C:\\Users\\jbuonopa\\My Programs\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj": {
       "version": "0.0.1",
       "restore": {
-        "projectUniqueName": "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj",
+        "projectUniqueName": "C:\\Users\\jbuonopa\\My Programs\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj",
         "projectName": "Force.Halo.Checkpoints",
-        "projectPath": "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj",
-        "packagesPath": "C:\\Users\\toaja\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\obj\\",
+        "projectPath": "C:\\Users\\jbuonopa\\My Programs\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj",
+        "packagesPath": "C:\\Users\\jbuonopa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbuonopa\\My Programs\\Force.Halo.Checkpoints\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\toaja\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbuonopa\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
