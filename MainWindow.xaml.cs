@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Media;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -192,14 +193,14 @@ namespace Force.Halo.Checkpoints
         {
             while (isProgramClosing == false)
             {
-                string processName = "notepad";
+                string processName = "EasyAntiCheat";
                 int processId = GetProcessIdByName(processName);
 
                 if (processId != -1)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        ForceCheckpointButton.Content = "Easy Anti-Cheat is running!";
+                        ForceCheckpointButton.Content = "Easy Anti-Cheat is running in the MCC!";
                         ForceCheckpointButton.IsEnabled = false;
                     });
                 }
@@ -323,17 +324,21 @@ namespace Force.Halo.Checkpoints
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ErrorTextBlock.Text = errorMessage;
             errorWindow.Owner = this;
+            SystemSounds.Exclamation.Play();
             errorWindow.ShowDialog();
             isErrorWindowOpen = false;
         }
 
         private void ShowUpdateWindow(string errorMessage, string customTitle)
         {
+            isErrorWindowOpen = true;
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ErrorTextBlock.Text = errorMessage;
             errorWindow.Owner = this;
             errorWindow.Title = customTitle;
+            SystemSounds.Exclamation.Play();
             errorWindow.ShowDialog();
+            isErrorWindowOpen = false;
         }
 
         public static string PackageVersion

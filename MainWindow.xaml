@@ -158,7 +158,7 @@
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter TargetName="border" Property="Background" Value="#FF858585" />
                                     <Setter TargetName="border" Property="BorderBrush" Value="#FF858585" />
-                                    <Setter TargetName="ContentPresenter" Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                                    <Setter TargetName="ContentPresenter" Property="TextElement.Foreground" Value="DarkRed" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
