@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -24,6 +23,7 @@ namespace Force.Halo.Checkpoints
         bool isRecordControllerInputDone = true;
         bool isButtonCoolDownHappening = false;
         bool isProgramClosing = false;
+        bool isErrorWindowOpen = false;
 
         // I believe this it being set halfway depressed.
         const byte triggerThreshold = 128;
@@ -236,7 +236,7 @@ namespace Force.Halo.Checkpoints
                                     return Task.CompletedTask;
                                 });
                             }
-                            // Triggers need to handled separately.
+                            // Triggers need to be handled separately.
                             else if (controllerTriggerSelected == "Left Trigger")
                             {
                                 if (state.Gamepad.bLeftTrigger > triggerThreshold)
@@ -319,10 +319,12 @@ namespace Force.Halo.Checkpoints
 
         private void ShowErrorWindow(string errorMessage)
         {
+            isErrorWindowOpen = true;
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ErrorTextBlock.Text = errorMessage;
             errorWindow.Owner = this;
             errorWindow.ShowDialog();
+            isErrorWindowOpen = false;
         }
 
         private void ShowUpdateWindow(string errorMessage, string customTitle)
@@ -438,7 +440,7 @@ namespace Force.Halo.Checkpoints
                 return;
             }
 
-            // Set up the hook if it's not already set
+            // Set up the hook if it's somehow not already set.
             if (_hookID == IntPtr.Zero)
             {
                 InstallHook();
@@ -555,8 +557,6 @@ namespace Force.Halo.Checkpoints
 
         private void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
-
-
             try
             {
                 string processName = string.Empty;
@@ -580,11 +580,14 @@ namespace Force.Halo.Checkpoints
 
                 int processId = GetProcessIdByName(processName);
 
-                if (processId == -1)
+                if (processId == -1 && processName == "MCC-Win64-Shipping")
                 {
-                    UnregisterCurrentHotkey();
+                    ShowErrorWindow($"Halo: The Master Chief Collection is not running.");
+                    return;
+                }
+                else if (processId == -1)
+                {
                     ShowErrorWindow($"{friendlyGameName} is not running.");
-                    RegisterCurrentHotkey();
                     return;
                 }
 
@@ -635,53 +638,56 @@ namespace Force.Halo.Checkpoints
 
         private void ForceCheckpointButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ForceCheckpointButton.IsEnabled == true)
+            if (isErrorWindowOpen == false)
             {
-                if (gameSelected == "Halo CE")
+                if (ForceCheckpointButton.IsEnabled == true)
                 {
-                    ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
-                }
-                else if (gameSelected == "Halo 2")
-                {
-                    ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
-                }
-                else if (gameSelected == "Halo 3")
-                {
-                    ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
-                }
-                else if (gameSelected == "Halo 4")
-                {
-                    ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
-                }
-                else if (gameSelected == "Halo Reach")
-                {
-                    ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
-                }
-                else if (gameSelected == "Halo 3 ODST")
-                {
-                    ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
-                }
-                else if (gameSelected == "Halo CE OG")
-                {
-                    ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
-                }
-                else if (gameSelected == "Halo Custom Edition")
-                {
-                    ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
-                }
-                else if (gameSelected == "Halo 2 Vista")
-                {
-                    ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                    if (gameSelected == "Halo CE")
+                    {
+                        ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                    }
+                    else if (gameSelected == "Halo 2")
+                    {
+                        ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                    }
+                    else if (gameSelected == "Halo 3")
+                    {
+                        ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                    }
+                    else if (gameSelected == "Halo 4")
+                    {
+                        ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                    }
+                    else if (gameSelected == "Halo Reach")
+                    {
+                        ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                    }
+                    else if (gameSelected == "Halo 3 ODST")
+                    {
+                        ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                    }
+                    else if (gameSelected == "Halo CE OG")
+                    {
+                        ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+                    }
+                    else if (gameSelected == "Halo Custom Edition")
+                    {
+                        ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
+                    }
+                    else if (gameSelected == "Halo 2 Vista")
+                    {
+                        ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                    }
+                    else
+                    {
+                        StatusTextBlock.Text = "Status: Please select a game first!";
+                        ShowErrorWindow("Select a game first.");
+                    }
                 }
                 else
                 {
-                    StatusTextBlock.Text = "Status: Please select a game first!";
-                    ShowErrorWindow("Select a game first.");
+                    ShowErrorWindow("Easy Anti-Cheat is running!");
                 }
-            }
-            else
-            {
-                ShowErrorWindow("Easy Anti-Cheat is running!");
             }
         }
 
