@@ -11,8 +11,9 @@ Notes:
 - _**Easy Anti-Cheat (MCC) or Anti-Cheat (H2V with the Silent Cartographer mod) needs to be disabled before using this program. You will be banned from either of these games if you fail to do so. If you are using this in a competive setting, you must disclose so prior to using the program.**_
 - Requires .NET Desktop Runtime 8.0. If you don't already have this, you will be told so and prompted to download it.
 - Only supports the latest update of MCC.
-- I have only tested this on 2 computers in solo gameplay.
-- Should support Windows 8 and newer. I have only tested it on Windows 11. If you get XInput 1.4 working on Windows 7, then it may work there too.
+- Only supports solo gameplay. Does not work in co-op and probably never will unless players sync checkpoints together.
+- I have only tested this on 2 computers using Windows 11.
+- Should support Windows 8 and newer. If you get XInput 1.4 working on Windows 7, then it may work there too.
 
 To-do:
 - Make it work with the Windows Store version of MCC (assuming it doesn't ATM)
