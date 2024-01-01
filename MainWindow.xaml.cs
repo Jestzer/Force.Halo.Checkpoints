@@ -25,6 +25,7 @@ namespace Force.Halo.Checkpoints
         bool isButtonCoolDownHappening = false;
         bool isProgramClosing = false;
         bool isErrorWindowOpen = false;
+        int failureCount = 0;
 
         // I believe this it being set halfway depressed.
         const byte triggerThreshold = 128;
@@ -193,24 +194,117 @@ namespace Force.Halo.Checkpoints
         {
             while (isProgramClosing == false)
             {
-                string processName = "EasyAntiCheat";
-                int processId = GetProcessIdByName(processName);
-
-                if (processId != -1)
+                if (gameSelected != "Halo 2 Vista" && gameSelected != "Halo Custom Edition" && gameSelected != "Halo CE OG")
                 {
-                    Dispatcher.Invoke(() =>
+                    string processName = "EasyAntiCheat";
+                    int processId = GetProcessIdByName(processName);
+
+                    if (processId != -1)
                     {
-                        ForceCheckpointButton.Content = "Easy Anti-Cheat is running in the MCC!";
-                        ForceCheckpointButton.IsEnabled = false;
-                    });
+                        Dispatcher.Invoke(() =>
+                        {
+                            ForceCheckpointButton.Content = "Easy Anti-Cheat is running in the MCC!";
+                            ForceCheckpointButton.IsEnabled = false;
+                        });
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            ForceCheckpointButton.Content = "Force Checkpoint";
+                            ForceCheckpointButton.IsEnabled = true;
+                        });
+                    }
                 }
-                else
+                else if (gameSelected == "Halo Custom Edition" || gameSelected == "Halo CE OG")
                 {
                     Dispatcher.Invoke(() =>
                     {
                         ForceCheckpointButton.Content = "Force Checkpoint";
                         ForceCheckpointButton.IsEnabled = true;
                     });
+                }
+                else
+                {
+                    string processName = "halo2";
+                    int processId = GetProcessIdByName(processName);
+
+                    if (processId != -1)
+                    {
+                        const int PROCESS_WM_READ = 0x0010;
+                        const int PROCESS_VM_OPERATION = 0x0008;
+                        string dllName = "xlive.dll";
+                        int offset = 0x4E68FF;                        
+                        try
+                        {
+                            IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processId);
+                            IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+
+                            if (dllBaseAddress == IntPtr.Zero)
+                            {
+                                ShowErrorWindow($"Failed to find the base address of {dllName}.");
+                                return;
+                            }
+
+                            IntPtr addressToCheck = IntPtr.Add(dllBaseAddress, offset);
+                            byte[] buffer = new byte[1];
+
+                            bool result = ReadProcessMemory(processHandle, addressToCheck, buffer, buffer.Length, out int bytesRead);
+
+                            if (result && bytesRead == buffer.Length)
+                            {
+                                byte valueRead = buffer[0];
+
+                                if (valueRead != 0)
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        // Thanks for nothing, WPF.
+                                        ForceCheckpointButton.Content = "Anti-Cheat is running in Silent Cartographer!\r\n                          (Halo 2: Vista)";
+                                        ForceCheckpointButton.IsEnabled = false;
+                                    });
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        ForceCheckpointButton.Content = "Force Checkpoint";
+                                        ForceCheckpointButton.IsEnabled = true;
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                ShowErrorWindow("Failed to read memory.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            failureCount++;
+
+                            if (failureCount < 3)
+                            {
+                                // Give 2 Halo 2 Vista in all its old, terribleness, a few seconds to breathe.
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                ShowErrorWindow("There's an issue with your copy of Halo 2: Vista. Here's the full error message: " + ex.Message);
+                                gameSelected = string.Empty;
+                                StatusTextBlock.Text = "Status: Issue with H2V.";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        failureCount = 0;
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            ForceCheckpointButton.Content = "Force Checkpoint";
+                            ForceCheckpointButton.IsEnabled = true;
+                        });
+                    }
                 }
             }
         }

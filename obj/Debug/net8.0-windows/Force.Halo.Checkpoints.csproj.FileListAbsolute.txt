@@ -45,3 +45,4 @@ C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\re
 C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.pdb
 C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.genruntimeconfig.cache
 C:\Users\jbuonopa\My Programs\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\ref\Force.Halo.Checkpoints.dll
+C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\Force.Halo.Checkpoints.sourcelink.json
