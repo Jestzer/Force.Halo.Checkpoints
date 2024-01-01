@@ -142,7 +142,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Center" Margin="0,367,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
+                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Center" Margin="0,368,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">

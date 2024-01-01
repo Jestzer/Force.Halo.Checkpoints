@@ -1,20 +1,20 @@
 ﻿Force.Halo.Checkpoints
-0.0.1.0
+
 
 winexe
 C#
 .cs
-C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows\
+C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\obj\Debug\net8.0-windows8.0\
 Force.Halo.Checkpoints
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\App.xaml
 2329594611
-
-8425486881
+1-1606303973
+6833090041
 198-688555687
 ErrorWindow.xaml;MainWindow.xaml;
 
-True
+False
 
