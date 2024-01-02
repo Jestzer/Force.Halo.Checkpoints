@@ -1,0 +1,8 @@
+game codes
+Halo Reach - 6
+Halo CE - 0
+Halo 2 - 1
+Halo 3 - 2
+H3 ODST - 5
+Halo 4 - 3
+2 bytes
