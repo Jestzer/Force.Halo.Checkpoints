@@ -234,7 +234,7 @@ namespace Force.Halo.Checkpoints
                         const int PROCESS_WM_READ = 0x0010;
                         const int PROCESS_VM_OPERATION = 0x0008;
                         string dllName = "xlive.dll";
-                        int offset = 0x4E68FF;                        
+                        int offset = 0x4E68FF;
                         try
                         {
                             IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processId);
@@ -654,6 +654,133 @@ namespace Force.Halo.Checkpoints
             StatusTextBlock.Text = "Status: Awaiting input";
         }
 
+        private void CheckIfGameIsRunning(string gameSelected, out bool gameIsRunning)
+        {
+            gameIsRunning = true;
+
+            try
+            {
+                string processName = string.Empty;
+
+                if (gameSelected == "Halo CE OG")
+                {
+                    processName = "halo";
+                }
+                else if (gameSelected == "Halo Custom Edition")
+                {
+                    processName = "haloce";
+                }
+                else if (gameSelected == "Halo 2 Vista")
+                {
+                    processName = "halo2";
+                }
+                else
+                {
+                    processName = "MCC-Win64-Shipping";
+                }
+
+                int processId = GetProcessIdByName(processName);
+
+                if (processId == -1 && processName == "MCC-Win64-Shipping")
+                {
+                    ShowErrorWindow("Halo: The Master Chief Collection is not running.");
+                    gameIsRunning = false;
+                    return;
+                }
+                else if (processId == -1)
+                {
+                    ShowErrorWindow($"{friendlyGameName} is not running.");
+                    gameIsRunning = false;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorWindow(ex.Message);
+            }
+        }
+        private void CheckIfMCCGameIsRunning(string gameSelected, string dllName, int offset, string expectedValue, out bool mccGameIsRunning)
+        {
+            mccGameIsRunning = true;
+            try
+            {
+                const int PROCESS_WM_READ = 0x0010;
+                const int PROCESS_VM_OPERATION = 0x0008;
+                string processName = "MCC-Win64-Shipping";
+                int processId = GetProcessIdByName(processName);
+
+                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processId);
+                IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+
+                if (dllBaseAddress == IntPtr.Zero)
+                {
+                    ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                    mccGameIsRunning = false;
+                    return;
+                }
+
+                byte[] buffer = new byte[4];
+
+                IntPtr addressToCheck = IntPtr.Add(dllBaseAddress, offset);
+                if (gameSelected == "Halo Reach" || gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
+                {
+                    buffer = new byte[1];
+                }
+                else if (gameSelected == "Halo CE")
+                {
+                    buffer = new byte[5];
+                }
+                else if (gameSelected == "Halo 3 ODST")
+                {
+                    // Use the default.
+                }
+
+                bool result = ReadProcessMemory(processHandle, addressToCheck, buffer, buffer.Length, out int bytesRead);
+
+                if (result && bytesRead == buffer.Length)
+                {
+                    if (gameSelected == "Halo Reach" || gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
+                    {
+                        byte valueRead = buffer[0];
+
+                        if (valueRead == 0)
+                        {
+                            mccGameIsRunning = false;
+                            Dispatcher.Invoke(() =>
+                            {
+                                ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                            });
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        string valueRead = System.Text.Encoding.ASCII.GetString(buffer);
+
+                        if (valueRead != expectedValue)
+                        {
+                            mccGameIsRunning = false;
+                            Dispatcher.Invoke(() =>
+                            {
+                                ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                            });
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    ShowErrorWindow("Failed to read memory.");
+                    mccGameIsRunning = false;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorWindow(ex.Message);
+            }
+        }
+
         private void ForceCheckpoint(string gameSelected, string dllName, int offset)
         {
             try
@@ -743,27 +870,77 @@ namespace Force.Halo.Checkpoints
                 {
                     if (gameSelected == "Halo CE")
                     {
-                        ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo CE", "halo1.dll", 0x2DCF80B, "Halo1", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo 2")
                     {
-                        ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo 3")
                     {
-                        ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo 4")
                     {
-                        ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo Reach")
                     {
-                        ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo Reach", "xaudio2_9.DLL", 0x889E2, "1", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo 3 ODST")
                     {
-                        ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                        if (gameIsRunning)
+                        {
+                            CheckIfMCCGameIsRunning("Halo 3 ODST", "halo3odst.dll", 0x2174F43, "ODST", out bool mccGameIsRunning);
+                            if (mccGameIsRunning)
+                            {
+                                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                            }
+                        }
                     }
                     else if (gameSelected == "Halo CE OG")
                     {
