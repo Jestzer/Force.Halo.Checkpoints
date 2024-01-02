@@ -32,7 +32,7 @@
                 </Grid>
                 <TextBlock x:Name="URLTextBlock" TextWrapping="Wrap" Foreground="White" Margin="32,31,45,32" FontSize="14" Visibility="Hidden" TextAlignment="Center"> 
                        A newer version is available! Please download it from 
-                    <Hyperlink NavigateUri="https://github.com/Jestzer/Halo.Force.Checkpoints/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Hyperlink NavigateUri="https://github.com/Jestzer/Force.Halo.Checkpoints/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
                         GitHub
                     </Hyperlink>.
                 </TextBlock>
