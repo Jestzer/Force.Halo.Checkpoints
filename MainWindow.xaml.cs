@@ -491,9 +491,11 @@ namespace Force.Halo.Checkpoints
                         ErrorWindow errorWindow = new();
                         errorWindow.Owner = this;
                         errorWindow.ErrorTextBlock.Text = "";
+                        errorWindow.URLTextBlock.IsEnabled = true;
                         errorWindow.URLTextBlock.Visibility = Visibility.Visible;
                         errorWindow.Title = "Check for updates";
                         errorWindow.ShowDialog();
+                        errorWindow.URLTextBlock.IsEnabled = false;
                     }
                     else
                     {
@@ -580,6 +582,17 @@ namespace Force.Halo.Checkpoints
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+        }
+
+        private void ForceCheckpointWithEnterKey(object sender, KeyEventArgs e)
+        {
+            if (ForceCheckpointButton.IsEnabled)
+            {
+                if (e.Key == Key.Enter)
+                {
+                    ForceCheckpointButton_Click(sender, e);
+                }
+            }
         }
 
         private void HaloCEButton_Click(object sender, RoutedEventArgs e)
@@ -962,7 +975,14 @@ namespace Force.Halo.Checkpoints
                 }
                 else
                 {
-                    ShowErrorWindow("Easy Anti-Cheat is running!");
+                    if (gameSelected == "Halo 2 Vista")
+                    {
+                        ShowErrorWindow("Anti-Cheat is running!");
+                    }
+                    else
+                    {
+                        ShowErrorWindow("Easy Anti-Cheat is running!");
+                    }
                 }
             }
         }
@@ -1101,34 +1121,24 @@ namespace Force.Halo.Checkpoints
 
         private void RecordControllerInputButton_Click(object sender, RoutedEventArgs e)
         {
-            // Ensure that 'sender' is indeed a Button.
-            if (sender is Button recordButton)
+            if (!isRecordingControllerInput)
             {
-                if (!isRecordingControllerInput)
-                {
-                    recordButton.Content = "Stop Recording Input";
-                    isRecordingControllerInput = true;
+                RecordControllerInputButton.Content = "Stop Recording Input";
+                isRecordingControllerInput = true;
 
-                    cancellationTokenSource = new CancellationTokenSource();
-                    controllerInputCheckThread = new Thread(() => RecordControllerInput(cancellationTokenSource.Token))
-                    {
-                        IsBackground = true
-                    };
-                    controllerInputCheckThread.Start();
-                }
-                else
+                cancellationTokenSource = new CancellationTokenSource();
+                controllerInputCheckThread = new Thread(() => RecordControllerInput(cancellationTokenSource.Token))
                 {
-                    // Signal the thread to stop
-                    cancellationTokenSource?.Cancel();
-                    isRecordingControllerInput = false;
-
-                    // Update the button content back to "Start Recording Input"
-                    recordButton.Content = "Start Recording Input";
-                }
+                    IsBackground = true
+                };
+                controllerInputCheckThread.Start();
             }
             else
             {
-                ShowErrorWindow("How did you end up here?!");
+                // Signal the thread to stop.
+                cancellationTokenSource?.Cancel();
+                isRecordingControllerInput = false;
+                RecordControllerInputButton.Content = "Start Recording Input";
             }
         }
 
@@ -1200,7 +1210,10 @@ namespace Force.Halo.Checkpoints
                     Dispatcher.Invoke(() =>
                     {
                         ShowErrorWindow("Your controller is either disconnected or unsupported.");
+                        RecordControllerInputButton.Content = "Start Recording Input";
                     });
+                    cancellationTokenSource?.Cancel();
+                    isRecordingControllerInput = false;
                     break;
                 }
             }
