@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 
@@ -14,6 +14,7 @@ namespace Force.Halo.Checkpoints
     public partial class MainWindow : Window
     {
         private readonly uint currentHotkey = 0;
+        public string rawHotKeyString = string.Empty;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
         private readonly Thread inputThread;
@@ -64,6 +65,7 @@ namespace Force.Halo.Checkpoints
 
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_SYSKEYDOWN = 0x0104;
         private static LowLevelKeyboardProc _proc = HookCallback;
         private static IntPtr _hookID = IntPtr.Zero;
 
@@ -92,7 +94,7 @@ namespace Force.Halo.Checkpoints
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN || nCode >= 0 && wParam == (IntPtr)WM_SYSKEYDOWN)
             {
                 KBDLLHOOKSTRUCT kbStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
                 if (_instance != null && kbStruct.vkCode == _instance._currentHotkey)
@@ -160,7 +162,7 @@ namespace Force.Halo.Checkpoints
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
-                KeyBindingTextBox.Text = Properties.Settings.Default.HotKeyPreference;
+                rawHotKeyString = Properties.Settings.Default.HotKeyPreference;
             }
 
             if (Properties.Settings.Default.LastGameSelected != string.Empty)
@@ -357,7 +359,7 @@ namespace Force.Halo.Checkpoints
                         Thread.Sleep(100);
                     }
                 }
-                // Prevent the user from triggering a checkpoint while selecting their hotkeys. Wait 2 seconds.
+                // Prevent the user from triggering a checkpoint while selecting their controller button binding. Wait 2 seconds.
                 else
                 {
                     Dispatcher.Invoke(() => // Gotta use these to play around with the UI.
@@ -384,7 +386,7 @@ namespace Force.Halo.Checkpoints
 
             if (KeyBindingTextBox.Text != string.Empty)
             {
-                Properties.Settings.Default.HotKeyPreference = KeyBindingTextBox.Text;
+                Properties.Settings.Default.HotKeyPreference = rawHotKeyString;
             }
 
             if (gameSelected != string.Empty)
@@ -525,18 +527,36 @@ namespace Force.Halo.Checkpoints
 
         private void RegisterCurrentHotkey()
         {
-            string hotkeyName = KeyBindingTextBox.Text.ToUpper();
+            string hotkeyName = rawHotKeyString.ToUpper();
 
             // Convert the key name to a Key enumeration, so it can actually be used.
             try
             {
-                Key key = (Key)Enum.Parse(typeof(Key), hotkeyName);
+                Key key = (Key)Enum.Parse(typeof(Key), hotkeyName, true);
                 _currentHotkey = (uint)KeyInterop.VirtualKeyFromKey(key);
+
+                KeyBindingTextBox.Text = rawHotKeyString;
+                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "(?<!^)([A-Z])", " $1");
+                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "D(\\d)", "$1");
+
+                KeyBindingTextBox.Text = KeyBindingTextBox.Text switch
+                {
+                    "Oem3" => "Backtick",
+                    "Oem Open Brackets" => "Open Bracket",
+                    "Oem5" => "Slash",
+                    "Oem6" => "Closed Bracket",
+                    "Oem Question" => "Slash",
+                    "Oem Plus" => "Equals",
+                    "Oem Minus" => "Hyphen",
+                    _ => "You silly bean!"
+                };
+
             }
-            catch
+            catch (Exception ex)
             {
                 KeyBindingTextBox.Text = string.Empty;
-                ShowErrorWindow($"You cannot use that key as your hotkey.");
+                rawHotKeyString = string.Empty;
+                ShowErrorWindow($"Oh dear, you've ran into an error. Here's the automatic message: " + ex.Message);
                 UnregisterCurrentHotkey();
                 return;
             }
@@ -1002,6 +1022,7 @@ namespace Force.Halo.Checkpoints
             if (isRecordingInput)
             {
                 KeyBindingTextBox.Text = string.Empty;
+                rawHotKeyString = string.Empty;
 
                 // Start recording.
                 KeyDown += OnKeyDownHandler;
@@ -1018,10 +1039,10 @@ namespace Force.Halo.Checkpoints
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             // Find out what the key being pressed is.
-            Key key = e.Key;
+            Key key = (e.Key == Key.System ? e.SystemKey : e.Key);
 
             // Append the key pressed to the TextBox.
-            KeyBindingTextBox.Text += key.ToString();
+            rawHotKeyString += key.ToString();
 
             // Stop recording after the key is pressed.
             isRecordingInput = false;
@@ -1032,29 +1053,6 @@ namespace Force.Halo.Checkpoints
             RegisterCurrentHotkey();
 
             RecordInputButton.Content = "Start Recording Input";
-        }
-
-        public static IntPtr FindPointerAddress(IntPtr hProc, IntPtr ptr, int[] offsets)
-        {
-            var buffer = new byte[IntPtr.Size];
-
-            ptr += offsets[0];
-            if (offsets.Length == 1)
-            {
-                return ptr;
-            }
-
-            offsets = offsets.Skip(1).ToArray();
-
-            foreach (int i in offsets)
-            {
-                ReadProcessMemory(hProc, ptr, buffer, buffer.Length, out int read);
-
-                ptr = (IntPtr.Size == 4)
-                ? IntPtr.Add(new IntPtr(BitConverter.ToInt32(buffer, 0)), i)
-                : ptr = IntPtr.Add(new IntPtr(BitConverter.ToInt64(buffer, 0)), i);
-            }
-            return ptr;
         }
 
         private static int GetProcessIdByName(string processName)
