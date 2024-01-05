@@ -420,6 +420,7 @@ namespace Force.Halo.Checkpoints
             errorWindow.Closed += ErrorWindow_Closed;
             errorWindow.Owner = this;
             SystemSounds.Exclamation.Play();
+            StatusTextBlock.Text = "Status: " + errorMessage;
             errorWindow.ShowDialog();
         }
 
@@ -839,14 +840,15 @@ namespace Force.Halo.Checkpoints
                 }
                 else
                 {
-                    ShowErrorWindow("Failed to read memory.");
+                    ShowErrorWindow("Failed to read memory for the game you selected.");
                     mccGameIsRunning = false;
                     return;
                 }
             }
             catch (Exception ex)
             {
-                ShowErrorWindow(ex.Message);
+                ShowErrorWindow($"The attempt to check {gameSelected} in The Master Chief Collection failed. " +
+                    "This is the automatic error message that was produced: " + ex.Message);
             }
         }
 
@@ -911,13 +913,12 @@ namespace Force.Halo.Checkpoints
                 // Calculate the address to write to by adding the offset to the base address.
                 IntPtr addressToWriteTo = IntPtr.Add(dllBaseAddress, offset);
 
-                // Define the value to write (1 byte.)
                 byte valueToWrite = 1;
 
                 // Allocate a buffer with the value to write.
                 byte[] buffer = [valueToWrite];
 
-                // Write the value to the calculated address.
+                // Write the value to the calculated address. Let us know what the result was.
                 bool result = WriteProcessMemory(processHandle, addressToWriteTo, buffer, buffer.Length, out int bytesWritten);
 
                 if (result && bytesWritten == buffer.Length)
@@ -933,7 +934,7 @@ namespace Force.Halo.Checkpoints
             }
             catch (Exception ex)
             {
-                ShowErrorWindow(ex.ToString());
+                ShowErrorWindow("The attempt to force a checkpoint failed. This is the automatic error message: " + ex.Message);
                 return;
             }
         }
@@ -944,94 +945,102 @@ namespace Force.Halo.Checkpoints
             {
                 if (ForceCheckpointButton.IsEnabled == true)
                 {
-                    if (gameSelected == "Halo CE")
+                    try
                     {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        if (gameSelected == "Halo CE")
                         {
-                            CheckIfMCCGameIsRunning("Halo CE", "halo1.dll", 0x2DCF80B, "Halo1", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                                CheckIfMCCGameIsRunning("Halo CE", "halo1.dll", 0x2DCF80B, "Halo1", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                                }
                             }
                         }
-                    }
-                    else if (gameSelected == "Halo 2")
-                    {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        else if (gameSelected == "Halo 2")
                         {
-                            CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                                CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                                }
                             }
                         }
-                    }
-                    else if (gameSelected == "Halo 3")
-                    {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        else if (gameSelected == "Halo 3")
                         {
-                            CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                                CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                                }
                             }
                         }
-                    }
-                    else if (gameSelected == "Halo 4")
-                    {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        else if (gameSelected == "Halo 4")
                         {
-                            CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                                CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                                }
                             }
                         }
-                    }
-                    else if (gameSelected == "Halo Reach")
-                    {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        else if (gameSelected == "Halo Reach")
                         {
-                            CheckIfMCCGameIsRunning("Halo Reach", "xaudio2_9.DLL", 0x889E2, "1", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                                CheckIfMCCGameIsRunning("Halo Reach", "xaudio2_9.DLL", 0x889E2, "1", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                                }
                             }
                         }
-                    }
-                    else if (gameSelected == "Halo 3 ODST")
-                    {
-                        CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                        if (gameIsRunning)
+                        else if (gameSelected == "Halo 3 ODST")
                         {
-                            CheckIfMCCGameIsRunning("Halo 3 ODST", "halo3odst.dll", 0x2174F43, "ODST", out bool mccGameIsRunning);
-                            if (mccGameIsRunning)
+                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                            if (gameIsRunning)
                             {
-                                ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                                CheckIfMCCGameIsRunning("Halo 3 ODST", "halo3odst.dll", 0x2174F43, "ODST", out bool mccGameIsRunning);
+                                if (mccGameIsRunning)
+                                {
+                                    ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                                }
                             }
                         }
+                        else if (gameSelected == "Halo CE OG")
+                        {
+                            ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+                        }
+                        else if (gameSelected == "Halo Custom Edition")
+                        {
+                            ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
+                        }
+                        else if (gameSelected == "Halo 2 Vista")
+                        {
+                            ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                        }
+                        else
+                        {
+                            StatusTextBlock.Text = "Status: Please select a game first!";
+                            ShowErrorWindow("Select a game first.");
+                        }
                     }
-                    else if (gameSelected == "Halo CE OG")
+                    catch (Exception ex)
                     {
-                        ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
-                    }
-                    else if (gameSelected == "Halo Custom Edition")
-                    {
-                        ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
-                    }
-                    else if (gameSelected == "Halo 2 Vista")
-                    {
-                        ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
-                    }
-                    else
-                    {
-                        StatusTextBlock.Text = "Status: Please select a game first!";
-                        ShowErrorWindow("Select a game first.");
+                        ShowErrorWindow("Something went wrong in the function for the button forcing a checkpoint. " +
+                            "Here's the automatic error message: " + ex.Message);
                     }
                 }
                 else
@@ -1114,26 +1123,26 @@ namespace Force.Halo.Checkpoints
 
         private static IntPtr GetModuleBaseAddress(int processID, string moduleName)
         {
-            IntPtr modBaseAddr = IntPtr.Zero;
+            IntPtr moduleBaseAddress = IntPtr.Zero;
             IntPtr[] moduleHandles = new IntPtr[1024];
 
             if (EnumProcessModulesEx(Process.GetProcessById(processID).Handle, moduleHandles, IntPtr.Size * moduleHandles.Length, out int bytesNeeded, 0x03))
             {
-                int numModules = bytesNeeded / IntPtr.Size;
-                for (int i = 0; i < numModules; i++)
+                int numOfModules = bytesNeeded / IntPtr.Size;
+                for (int i = 0; i < numOfModules; i++)
                 {
-                    StringBuilder modName = new StringBuilder(255);
-                    if (GetModuleBaseName(Process.GetProcessById(processID).Handle, moduleHandles[i], modName, modName.Capacity) > 0)
+                    StringBuilder sbModuleName = new StringBuilder(255);
+                    if (GetModuleBaseName(Process.GetProcessById(processID).Handle, moduleHandles[i], sbModuleName, sbModuleName.Capacity) > 0)
                     {
-                        if (modName.ToString().Equals(moduleName, StringComparison.OrdinalIgnoreCase))
+                        if (sbModuleName.ToString().Equals(moduleName, StringComparison.OrdinalIgnoreCase))
                         {
-                            modBaseAddr = moduleHandles[i];
+                            moduleBaseAddress = moduleHandles[i];
                             break;
                         }
                     }
                 }
             }
-            return modBaseAddr;
+            return moduleBaseAddress;
         }
 
         private readonly Dictionary<ushort, string> controllerButtonMappings = new Dictionary<ushort, string>
