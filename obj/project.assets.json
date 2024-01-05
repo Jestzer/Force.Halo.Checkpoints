@@ -12,7 +12,7 @@
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "0.0.1",
+    "version": "0.1.0",
     "restore": {
       "projectUniqueName": "C:\\Users\\toaja\\My_Programs_Local\\Force.Halo.Checkpoints\\Force.Halo.Checkpoints.csproj",
       "projectName": "Force.Halo.Checkpoints",

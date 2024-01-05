@@ -1,5 +1,5 @@
 ﻿Force.Halo.Checkpoints
-0.0.1.0
+0.1.0.0
 
 winexe
 C#
@@ -16,5 +16,5 @@ C:\Users\toaja\My_Programs_Local\Force.Halo.Checkpoints\App.xaml
 198-688555687
 ErrorWindow.xaml;MainWindow.xaml;
 
-True
+False
 
