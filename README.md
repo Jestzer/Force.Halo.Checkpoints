@@ -12,7 +12,7 @@ Notes:
 - Only supports the latest update of MCC.
 - Only supports solo gameplay. Does not work in co-op and probably never will unless players sync checkpoints together.
 - I have only tested this on 2 computers using Windows 11.
-- Should support Windows 8 and newer. If you get XInput 1.4 working on Windows 7 (or this program at all working on it), then it may work there too.
+- Should support Windows 8.1 and newer. If you get XInput 1.4 working on Windows 7 (or this program at all working on it), then it may work there too. Otherwise, if you're on Windows 7, just don't use the controller button binding.
 
 To-do:
 - Make sure everything actually works.
