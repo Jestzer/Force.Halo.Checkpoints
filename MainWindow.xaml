@@ -38,9 +38,7 @@
                 </DockPanel>
             </Border>
             <Grid Background="#FF2D2B2B" Grid.Row="1">
-                <Label x:Name="SelectGameLabel" Content="Select a game" HorizontalAlignment="Left" Margin="23,25,0,0" VerticalAlignment="Top" Width="87" Foreground="White"/>
-                <Label x:Name="KeyBindingLabel" Content="Keyboard button binding" HorizontalAlignment="Left" Margin="176,25,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
-                <Label x:Name="GameSelectedLabel" Content="Game selected: None" HorizontalAlignment="Left" Margin="177,195,0,0" VerticalAlignment="Top" Width="221" Foreground="White"/>
+                <Label x:Name="KeyBindingLabel" Content="Keyboard button binding" HorizontalAlignment="Left" Margin="198,25,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
                 <Button x:Name="HaloCEButton" Content="Halo CE" HorizontalAlignment="Left" Margin="30,70,0,0" VerticalAlignment="Top" Click="HaloCEButton_Click" Width="61" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
@@ -167,7 +165,7 @@
                 </Button>
                 <Label x:Name="LiterallyVLabel" Content="v" HorizontalAlignment="Left" Margin="10,432,0,0" VerticalAlignment="Top" Width="79" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
                 <Label x:Name="VersionLabel" Content="{Binding PackageVersion}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="168" Foreground="White" Height="28" Margin="18,0,0,8"/>
-                <Button x:Name="RecordInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="180,75,0,0" VerticalAlignment="Top" Click="RecordInputButton_Click" Width="150" Foreground="White">
+                <Button x:Name="RecordInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="202,75,0,0" VerticalAlignment="Top" Click="RecordInputButton_Click" Width="150" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -184,7 +182,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBox x:Name="KeyBindingTextBox" HorizontalAlignment="Left" Margin="180,51,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
+                <TextBox x:Name="KeyBindingTextBox" HorizontalAlignment="Left" Margin="202,51,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
                          IsReadOnly="True"/>
                 <Button x:Name="CheckForUpdateButton" Content="Check for update" HorizontalAlignment="Left" Margin="281,0,0,8" VerticalAlignment="Bottom" Width="110" Click="CheckforUpdateButton_Click" Foreground="White">
                     <Button.Template>
@@ -203,8 +201,8 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting game selection" TextWrapping="Wrap" Foreground="White" Margin="183,223,28,122"/>
-                <Button x:Name="HaloCEOGButton" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="30,262,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="129" Foreground="White">
+                <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting game selection" TextWrapping="Wrap" Foreground="White" Margin="202,198,28,122"/>
+                <Button x:Name="HaloCEOGButton" Content="Halo: CE (not MCC)" HorizontalAlignment="Left" Margin="30,262,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="131" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -255,8 +253,8 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Label x:Name="ControllerButtonBindingLabel" Content="Controller button binding" HorizontalAlignment="Left" Margin="176,116,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
-                <Button x:Name="RecordControllerInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="180,166,0,0" VerticalAlignment="Top" Click="RecordControllerInputButton_Click" Width="150" Foreground="White">
+                <Label x:Name="ControllerButtonBindingLabel" Content="Controller button binding" HorizontalAlignment="Left" Margin="198,116,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
+                <Button x:Name="RecordControllerInputButton" Content="Start Recording Input" HorizontalAlignment="Left" Margin="202,166,0,0" VerticalAlignment="Top" Click="RecordControllerInputButton_Click" Width="150" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -273,8 +271,9 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBox x:Name="ControllerButtonBindingTextBlock" HorizontalAlignment="Left" Margin="180,142,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
+                <TextBox x:Name="ControllerButtonBindingTextBlock" HorizontalAlignment="Left" Margin="202,142,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
                     IsReadOnly="True"/>
+                <TextBlock x:Name="GameSelectedTextBlock" Text="Game selected: None" TextWrapping="Wrap" Foreground="White" Margin="18,31,212,399"/>
             </Grid>
         </Grid>
     </Border>

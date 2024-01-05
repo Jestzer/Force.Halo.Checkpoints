@@ -25,7 +25,7 @@ namespace Force.Halo.Checkpoints
         bool isRecordControllerInputDone = true;
         bool isButtonCoolDownHappening = false;
         bool isProgramClosing = false;
-        bool isErrorWindowOpen = false;
+        private bool isErrorWindowOpen = false;
         int failureCount = 0;
         bool isUsingWindowsStoreMCC = false;
 
@@ -166,7 +166,7 @@ namespace Force.Halo.Checkpoints
             if (Properties.Settings.Default.LastGameSelected != string.Empty)
             {
                 gameSelected = Properties.Settings.Default.LastGameSelected;
-                GameSelectedLabel.Content = Properties.Settings.Default.LastGameSelectedLabel;
+                GameSelectedTextBlock.Text = Properties.Settings.Default.LastGameSelectedLabel;
                 friendlyGameName = Properties.Settings.Default.LastGameFriendlyName;
                 StatusTextBlock.Text = "Status: Awaiting input";
             }
@@ -391,7 +391,7 @@ namespace Force.Halo.Checkpoints
             {
                 Properties.Settings.Default.LastGameSelected = gameSelected;
                 Properties.Settings.Default.LastGameFriendlyName = friendlyGameName;
-                Properties.Settings.Default.LastGameSelectedLabel = (string)GameSelectedLabel.Content;
+                Properties.Settings.Default.LastGameSelectedLabel = GameSelectedTextBlock.Text;
             }
 
             if (isControllerButtonSelected)
@@ -417,10 +417,21 @@ namespace Force.Halo.Checkpoints
             isErrorWindowOpen = true;
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ErrorTextBlock.Text = errorMessage;
+            errorWindow.Closed += ErrorWindow_Closed;
             errorWindow.Owner = this;
             SystemSounds.Exclamation.Play();
             errorWindow.ShowDialog();
+        }
+
+        private void ErrorWindow_Closed(object? sender, EventArgs e)
+        {
             isErrorWindowOpen = false;
+            
+            // Unsubscribe from the Closed event.
+            if (sender is ErrorWindow errorWindow)
+            {
+                errorWindow.Closed -= ErrorWindow_Closed;
+            }
         }
 
         private void ShowUpdateWindow(string errorMessage, string customTitle)
@@ -625,7 +636,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloCEButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = $"Game selected: Halo CE";
+            GameSelectedTextBlock.Text = $"Game selected: Halo CE";
             gameSelected = "Halo CE";
             friendlyGameName = "Halo: Combat Evolved";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -633,7 +644,7 @@ namespace Force.Halo.Checkpoints
 
         private void Halo2Button_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo 2";
+            GameSelectedTextBlock.Text = "Game selected: Halo 2";
             gameSelected = "Halo 2";
             friendlyGameName = gameSelected;
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -641,7 +652,7 @@ namespace Force.Halo.Checkpoints
 
         private void Halo3Button_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo 3";
+            GameSelectedTextBlock.Text = "Game selected: Halo 3";
             gameSelected = "Halo 3";
             friendlyGameName = gameSelected;
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -649,7 +660,7 @@ namespace Force.Halo.Checkpoints
 
         private void Halo3ODSTButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo 3: ODST";
+            GameSelectedTextBlock.Text = "Game selected: Halo 3: ODST";
             gameSelected = "Halo 3 ODST";
             friendlyGameName = "Halo 3: ODST";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -657,7 +668,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloReachButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo: Reach";
+            GameSelectedTextBlock.Text = "Game selected: Halo: Reach";
             gameSelected = "Halo Reach";
             friendlyGameName = "Halo: Reach";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -665,7 +676,7 @@ namespace Force.Halo.Checkpoints
 
         private void Halo4Button_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo 4";
+            GameSelectedTextBlock.Text = "Game selected: Halo 4";
             gameSelected = "Halo 4";
             friendlyGameName = gameSelected;
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -673,7 +684,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloCEOGButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo: CE (not MCC)";
+            GameSelectedTextBlock.Text = "Game selected: Halo: CE (not MCC)";
             gameSelected = "Halo CE OG";
             friendlyGameName = "The original Halo: Combat Evolved for PC";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -681,7 +692,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloCustomEditionButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo: Custom Edition";
+            GameSelectedTextBlock.Text = "Game selected: Halo: Custom Edition";
             gameSelected = "Halo Custom Edition";
             friendlyGameName = "Halo: Custom Edition";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -689,7 +700,7 @@ namespace Force.Halo.Checkpoints
 
         private void Halo2VistaButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedLabel.Content = "Game selected: Halo 2: Vista";
+            GameSelectedTextBlock.Text = "Game selected: Halo 2: Vista";
             gameSelected = "Halo 2 Vista";
             friendlyGameName = "Halo 2: Vista";
             StatusTextBlock.Text = "Status: Awaiting input";
