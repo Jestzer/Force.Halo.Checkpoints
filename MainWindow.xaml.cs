@@ -548,7 +548,7 @@ namespace Force.Halo.Checkpoints
                     "Oem Question" => "Slash",
                     "Oem Plus" => "Equals",
                     "Oem Minus" => "Hyphen",
-                    _ => "You silly bean!"
+                    _ => KeyBindingTextBox.Text
                 };
 
             }
