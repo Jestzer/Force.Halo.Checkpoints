@@ -184,7 +184,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBox x:Name="KeyBindingTextBox" HorizontalAlignment="Left" Margin="180,51,0,0" Text="" VerticalAlignment="Top" Width="94" Background="#FF464646" Foreground="White"
+                <TextBox x:Name="KeyBindingTextBox" HorizontalAlignment="Left" Margin="180,51,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
                          IsReadOnly="True"/>
                 <Button x:Name="CheckForUpdateButton" Content="Check for update" HorizontalAlignment="Left" Margin="281,0,0,8" VerticalAlignment="Bottom" Width="110" Click="CheckforUpdateButton_Click" Foreground="White">
                     <Button.Template>
@@ -273,7 +273,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBox x:Name="ControllerButtonBindingTextBlock" HorizontalAlignment="Left" Margin="180,142,0,0" Text="" VerticalAlignment="Top" Width="94" Background="#FF464646" Foreground="White"
+                <TextBox x:Name="ControllerButtonBindingTextBlock" HorizontalAlignment="Left" Margin="180,142,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
                     IsReadOnly="True"/>
             </Grid>
         </Grid>

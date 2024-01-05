@@ -27,6 +27,7 @@ namespace Force.Halo.Checkpoints
         bool isProgramClosing = false;
         bool isErrorWindowOpen = false;
         int failureCount = 0;
+        bool isUsingWindowsStoreMCC = false;
 
         // I believe this it being set halfway depressed.
         const byte triggerThreshold = 128;
@@ -124,15 +125,12 @@ namespace Force.Halo.Checkpoints
         }
 
         [StructLayout(LayoutKind.Sequential)]
+
         public struct XInputGamepad
         {
             public ushort wButtons;
             public byte bLeftTrigger;
             public byte bRightTrigger;
-            public short sThumbLX;
-            public short sThumbLY;
-            public short sThumbRX;
-            public short sThumbRY;
         }
 
         public const int XINPUT_GAMEPAD_DPAD_UP = 0x0001;
@@ -199,9 +197,9 @@ namespace Force.Halo.Checkpoints
                 if (gameSelected != "Halo 2 Vista" && gameSelected != "Halo Custom Edition" && gameSelected != "Halo CE OG")
                 {
                     string processName = "EasyAntiCheat";
-                    int processId = GetProcessIdByName(processName);
+                    int processID = GetProcessIdByName(processName);
 
-                    if (processId != -1)
+                    if (processID != -1)
                     {
                         Dispatcher.Invoke(() =>
                         {
@@ -229,9 +227,9 @@ namespace Force.Halo.Checkpoints
                 else
                 {
                     string processName = "halo2";
-                    int processId = GetProcessIdByName(processName);
+                    int processID = GetProcessIdByName(processName);
 
-                    if (processId != -1)
+                    if (processID != -1)
                     {
                         const int PROCESS_WM_READ = 0x0010;
                         const int PROCESS_VM_OPERATION = 0x0008;
@@ -239,8 +237,8 @@ namespace Force.Halo.Checkpoints
                         int offset = 0x4E68FF;
                         try
                         {
-                            IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processId);
-                            IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+                            IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processID);
+                            IntPtr dllBaseAddress = GetModuleBaseAddress(processID, dllName);
 
                             if (dllBaseAddress == IntPtr.Zero)
                             {
@@ -286,7 +284,7 @@ namespace Force.Halo.Checkpoints
 
                             if (failureCount < 3)
                             {
-                                // Give 2 Halo 2 Vista in all its old, terribleness, a few seconds to breathe.
+                                // Give Halo 2 Vista in all its old, terribleness, 3 seconds to breathe.
                                 Thread.Sleep(1000);
                             }
                             else
@@ -355,7 +353,7 @@ namespace Force.Halo.Checkpoints
                                 }
                             }
                         }
-                        // Sleep to prevent high CPU usage.
+                        // Sleep to supposedly prevent high CPU usage.
                         Thread.Sleep(100);
                     }
                 }
@@ -538,9 +536,11 @@ namespace Force.Halo.Checkpoints
                 KeyBindingTextBox.Text = rawHotKeyString;
                 KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "(?<!^)([A-Z])", " $1");
                 KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "D(\\d)", "$1");
+                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "Num Pad", "Number Pad ");
 
                 KeyBindingTextBox.Text = KeyBindingTextBox.Text switch
                 {
+                    "Oem1" => "Semicolon",
                     "Oem3" => "Backtick",
                     "Oem Open Brackets" => "Open Bracket",
                     "Oem5" => "Slash",
@@ -548,6 +548,14 @@ namespace Force.Halo.Checkpoints
                     "Oem Question" => "Slash",
                     "Oem Plus" => "Equals",
                     "Oem Minus" => "Hyphen",
+                    "Oem Quotes" => "Single Quote",
+                    "Oem Comma" => "Comma",
+                    "Oem Period" => "Period",
+                    "Capital" => "Caps Lock",
+                    "L Win" => "Left Windows Key",
+                    "R Win" => "Right Windows Key",
+                    "Apps" => "Menu Key",
+                    "Scroll" => "Scroll Lock",
                     _ => KeyBindingTextBox.Text
                 };
 
@@ -710,17 +718,25 @@ namespace Force.Halo.Checkpoints
                 else
                 {
                     processName = "MCC-Win64-Shipping";
+                    isUsingWindowsStoreMCC = false;
                 }
 
-                int processId = GetProcessIdByName(processName);
+                int processID = GetProcessIdByName(processName);
 
-                if (processId == -1 && processName == "MCC-Win64-Shipping")
+                if (processID == -1 && processName == "MCC-Win64-Shipping")
                 {
-                    ShowErrorWindow("Halo: The Master Chief Collection is not running.");
-                    gameIsRunning = false;
-                    return;
+                    processName = "MCCWinStore-Win64-Shipping";
+                    processID = GetProcessIdByName(processName);
+                    isUsingWindowsStoreMCC = true;
+
+                    if (processID == -1)
+                    {
+                        ShowErrorWindow("Halo: The Master Chief Collection is not running.");
+                        gameIsRunning = false;
+                        return;
+                    }
                 }
-                else if (processId == -1)
+                else if (processID == -1)
                 {
                     ShowErrorWindow($"{friendlyGameName} is not running.");
                     gameIsRunning = false;
@@ -735,15 +751,24 @@ namespace Force.Halo.Checkpoints
         private void CheckIfMCCGameIsRunning(string gameSelected, string dllName, int offset, string expectedValue, out bool mccGameIsRunning)
         {
             mccGameIsRunning = true;
+            string processName = string.Empty;
             try
             {
                 const int PROCESS_WM_READ = 0x0010;
                 const int PROCESS_VM_OPERATION = 0x0008;
-                string processName = "MCC-Win64-Shipping";
-                int processId = GetProcessIdByName(processName);
+                if (!isUsingWindowsStoreMCC)
+                {
+                    processName = "MCC-Win64-Shipping";
+                }
+                else
+                {
+                    processName = "MCCWinStore-Win64-Shipping";
+                }
 
-                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processId);
-                IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+                int processID = GetProcessIdByName(processName);
+
+                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_VM_OPERATION, false, processID);
+                IntPtr dllBaseAddress = GetModuleBaseAddress(processID, dllName);
 
                 if (dllBaseAddress == IntPtr.Zero)
                 {
@@ -837,14 +862,21 @@ namespace Force.Halo.Checkpoints
                     processName = "MCC-Win64-Shipping";
                 }
 
-                int processId = GetProcessIdByName(processName);
+                int processID = GetProcessIdByName(processName);
 
-                if (processId == -1 && processName == "MCC-Win64-Shipping")
+                if (processID == -1 && processName == "MCC-Win64-Shipping")
                 {
-                    ShowErrorWindow($"Halo: The Master Chief Collection is not running.");
-                    return;
+                    processName = "MCCWinStore-Win64-Shipping";
+                    processID = GetProcessIdByName(processName);
+                    isUsingWindowsStoreMCC = true;
+
+                    if (processID == -1)
+                    {
+                        ShowErrorWindow("Halo: The Master Chief Collection is not running.");
+                        return;
+                    }
                 }
-                else if (processId == -1)
+                else if (processID == -1)
                 {
                     ShowErrorWindow($"{friendlyGameName} is not running.");
                     return;
@@ -854,10 +886,10 @@ namespace Force.Halo.Checkpoints
                 const int PROCESS_WM_WRITE = 0x0020;
                 const int PROCESS_VM_OPERATION = 0x0008;
 
-                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processId);
+                IntPtr processHandle = OpenProcess(PROCESS_WM_READ | PROCESS_WM_WRITE | PROCESS_VM_OPERATION, false, processID);
 
                 // Get the base address of the DLL in the process's memory space.
-                IntPtr dllBaseAddress = GetModuleBaseAddress(processId, dllName);
+                IntPtr dllBaseAddress = GetModuleBaseAddress(processID, dllName);
 
                 if (dllBaseAddress == IntPtr.Zero)
                 {
@@ -927,7 +959,6 @@ namespace Force.Halo.Checkpoints
                     }
                     else if (gameSelected == "Halo 3")
                     {
-
                         CheckIfGameIsRunning("MCC", out bool gameIsRunning);
                         if (gameIsRunning)
                         {
@@ -940,7 +971,6 @@ namespace Force.Halo.Checkpoints
                     }
                     else if (gameSelected == "Halo 4")
                     {
-
                         CheckIfGameIsRunning("MCC", out bool gameIsRunning);
                         if (gameIsRunning)
                         {
@@ -1071,18 +1101,18 @@ namespace Force.Halo.Checkpoints
             }
         }
 
-        private static IntPtr GetModuleBaseAddress(int processId, string moduleName)
+        private static IntPtr GetModuleBaseAddress(int processID, string moduleName)
         {
             IntPtr modBaseAddr = IntPtr.Zero;
             IntPtr[] moduleHandles = new IntPtr[1024];
 
-            if (EnumProcessModulesEx(Process.GetProcessById(processId).Handle, moduleHandles, IntPtr.Size * moduleHandles.Length, out int bytesNeeded, 0x03))
+            if (EnumProcessModulesEx(Process.GetProcessById(processID).Handle, moduleHandles, IntPtr.Size * moduleHandles.Length, out int bytesNeeded, 0x03))
             {
                 int numModules = bytesNeeded / IntPtr.Size;
                 for (int i = 0; i < numModules; i++)
                 {
                     StringBuilder modName = new StringBuilder(255);
-                    if (GetModuleBaseName(Process.GetProcessById(processId).Handle, moduleHandles[i], modName, modName.Capacity) > 0)
+                    if (GetModuleBaseName(Process.GetProcessById(processID).Handle, moduleHandles[i], modName, modName.Capacity) > 0)
                     {
                         if (modName.ToString().Equals(moduleName, StringComparison.OrdinalIgnoreCase))
                         {
