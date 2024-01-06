@@ -1,0 +1,84 @@
+﻿<Window x:Class="Force.Halo.Checkpoints.DisclaimerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Force.Halo.Checkpoints"
+        mc:Ignorable="d"
+                Title="Error" Height="250" Width="450"
+    WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Border BorderBrush="Gray" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom title bar -->
+            <Border Background="Gray" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                <DockPanel>
+                    <Button Content="✕" DockPanel.Dock="Right" Click="CloseButton_Click" Width="45" Background="#FFD80000" Foreground="White" FontWeight="Bold" FontFamily="Cascadia Mono" />
+                    <Label Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" Foreground="White" VerticalAlignment="Center" />
+                </DockPanel>
+            </Border>
+            <Grid Background="#FF2D2B2B" Grid.Row="1">
+                <Grid Margin="32,10,45,58">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-4,0,-15,0">
+                        <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap"
+               Text="By pressing OK, you agree to the following:
+                    - You will disable Easy Anti-Cheat or Anti-Cheat before attempting to use this software.
+                    - You will not attempt to use this software with Easy Anti-Cheat or Anti-Cheat running.
+                    - You understand that a failure to follow the above statements will result in bans related
+                    but not limited to software, hardware, community, or any other ban
+                    - You will disclose to any relevant audience that you are using this program prior to using
+                    this program.
+                    If you do not agree to any of the statements above, please close this program
+                    now and do not use it." Foreground="White" 
+               FontSize="11" TextAlignment="Left" HorizontalAlignment="Left" 
+               VerticalAlignment="Top"/>
+                    </ScrollViewer>
+                </Grid>
+                <TextBlock x:Name="URLTextBlock" TextWrapping="Wrap" Foreground="White" Margin="32,31,45,32" FontSize="14" Visibility="Hidden" IsEnabled="False" TextAlignment="Center"> 
+                       A newer version is available! Please download it from 
+                    <Hyperlink NavigateUri="https://github.com/Jestzer/Force.Halo.Checkpoints/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
+                        GitHub
+                    </Hyperlink>.
+                </TextBlock>
+                <Button x:Name="OKButton" Content="I agree" HorizontalAlignment="Left" Margin="32,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFCECECE" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button x:Name="DisagreeButton" Content="I disagree" HorizontalAlignment="Left" Margin="251,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Gray" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#FFCECECE" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
