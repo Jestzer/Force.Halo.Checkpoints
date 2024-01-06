@@ -118,5 +118,17 @@ namespace Force.Halo.Checkpoints.Properties {
                 this["HotKeyPreference"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsDisclaimerAgreed {
+            get {
+                return ((bool)(this["IsDisclaimerAgreed"]));
+            }
+            set {
+                this["IsDisclaimerAgreed"] = value;
+            }
+        }
     }
 }

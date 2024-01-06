@@ -7,11 +7,17 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="DisclaimerWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="ErrorWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="DisclaimerWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="ErrorWindow.xaml">
       <SubType>Designer</SubType>
     </Page>

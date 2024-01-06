@@ -150,6 +150,7 @@ namespace Force.Halo.Checkpoints
 
         public MainWindow()
         {
+            DisclaimerWindow();
             InitializeComponent();
             _instance = this;
 
@@ -189,7 +190,25 @@ namespace Force.Halo.Checkpoints
             antiCheatCheckThread.IsBackground = true;
             antiCheatCheckThread.Start();
         }
-
+        private void DisclaimerWindow()
+        {
+            if (Properties.Settings.Default.IsControllerButtonSelectedPreference == false)
+            {
+                isErrorWindowOpen = true;
+                ErrorWindow errorWindow = new ErrorWindow();
+                errorWindow.ErrorTextBlock.Text = "By pressing OK, you agree to the following:" +
+                    "\r\n- You will disable Easy Anti-Cheat or Anti-Cheat before attempting to use this software." +
+                    "\r\n- You will not attempt to use this software with Easy Anti-Cheat or Anti-Cheat running." +
+                    "\r\n- You understand that a failure to follow the above statements will result in bans related " +
+                    "but not limited to software, hardware, community, or any other ban." +
+                    "\r\n- You will disclose to any relevant audience that you are using this program prior to using " +
+                    "this program.\r\nIf you do not agree to any of the statements above, please close this program " +
+                    "now and do not use it.";
+                errorWindow.Title = "Disclaimer";
+                errorWindow.Closed += ErrorWindow_Closed;
+                errorWindow.ShowDialog();
+            }
+        }
         private void CheckForAntiCheatRunning()
         {
             while (isProgramClosing == false)
