@@ -17,8 +17,8 @@ namespace Force.Halo.Checkpoints
         public string rawHotKeyString = string.Empty;
         public string gameSelected = string.Empty;
         public string friendlyGameName = string.Empty;
-        private readonly Thread inputThread;
-        private readonly Thread antiCheatCheckThread;
+        private readonly Thread? inputThread;
+        private readonly Thread? antiCheatCheckThread;
         private ushort controllerButtonSelected = 0;
         public string controllerTriggerSelected = string.Empty;
         bool isControllerButtonSelected = false;
@@ -150,63 +150,58 @@ namespace Force.Halo.Checkpoints
 
         public MainWindow()
         {
-            DisclaimerWindow();
-            InitializeComponent();
-            _instance = this;
-
-            // For printing the version number.
-            DataContext = this;
-
-            InstallHook();
-
-            if (Properties.Settings.Default.HotKeyPreference != string.Empty)
+            if (!Properties.Settings.Default.IsDisclaimerAgreed)
             {
-                rawHotKeyString = Properties.Settings.Default.HotKeyPreference;
+                DisclaimerWindow();
             }
-
-            if (Properties.Settings.Default.LastGameSelected != string.Empty)
+            if (Properties.Settings.Default.IsDisclaimerAgreed)
             {
-                gameSelected = Properties.Settings.Default.LastGameSelected;
-                GameSelectedTextBlock.Text = Properties.Settings.Default.LastGameSelectedLabel;
-                friendlyGameName = Properties.Settings.Default.LastGameFriendlyName;
-                StatusTextBlock.Text = "Status: Awaiting input";
+                InitializeComponent();
+                _instance = this;
+
+                // For printing the version number.
+                DataContext = this;
+
+                InstallHook();
+
+                if (Properties.Settings.Default.HotKeyPreference != string.Empty)
+                {
+                    rawHotKeyString = Properties.Settings.Default.HotKeyPreference;
+                }
+
+                if (Properties.Settings.Default.LastGameSelected != string.Empty)
+                {
+                    gameSelected = Properties.Settings.Default.LastGameSelected;
+                    GameSelectedTextBlock.Text = Properties.Settings.Default.LastGameSelectedLabel;
+                    friendlyGameName = Properties.Settings.Default.LastGameFriendlyName;
+                    StatusTextBlock.Text = "Status: Awaiting input";
+                }
+
+                if (Properties.Settings.Default.IsControllerButtonSelectedPreference == true)
+                {
+                    isControllerButtonSelected = true;
+                    isRecordControllerInputDone = true;
+                    controllerButtonSelected = Properties.Settings.Default.ControllerButtonPreference;
+                    controllerTriggerSelected = Properties.Settings.Default.ControllerTriggerPreference;
+                    ControllerButtonBindingTextBlock.Text = Properties.Settings.Default.ControllerButtonPreferenceString;
+                }
+
+                // Start some threads in the background.
+                inputThread = new Thread(CheckControllerInput);
+                inputThread.IsBackground = true;
+                inputThread.Start();
+
+                antiCheatCheckThread = new Thread(CheckForAntiCheatRunning);
+                antiCheatCheckThread.IsBackground = true;
+                antiCheatCheckThread.Start();
             }
-
-            if (Properties.Settings.Default.IsControllerButtonSelectedPreference == true)
-            {
-                isControllerButtonSelected = true;
-                isRecordControllerInputDone = true;
-                controllerButtonSelected = Properties.Settings.Default.ControllerButtonPreference;
-                controllerTriggerSelected = Properties.Settings.Default.ControllerTriggerPreference;
-                ControllerButtonBindingTextBlock.Text = Properties.Settings.Default.ControllerButtonPreferenceString;
-            }
-
-            // Start the input check on a background thread.
-            inputThread = new Thread(CheckControllerInput);
-            inputThread.IsBackground = true;
-            inputThread.Start();
-
-            antiCheatCheckThread = new Thread(CheckForAntiCheatRunning);
-            antiCheatCheckThread.IsBackground = true;
-            antiCheatCheckThread.Start();
         }
         private void DisclaimerWindow()
         {
             if (Properties.Settings.Default.IsControllerButtonSelectedPreference == false)
             {
-                isErrorWindowOpen = true;
-                ErrorWindow errorWindow = new ErrorWindow();
-                errorWindow.ErrorTextBlock.Text = "By pressing OK, you agree to the following:" +
-                    "\r\n- You will disable Easy Anti-Cheat or Anti-Cheat before attempting to use this software." +
-                    "\r\n- You will not attempt to use this software with Easy Anti-Cheat or Anti-Cheat running." +
-                    "\r\n- You understand that a failure to follow the above statements will result in bans related " +
-                    "but not limited to software, hardware, community, or any other ban." +
-                    "\r\n- You will disclose to any relevant audience that you are using this program prior to using " +
-                    "this program.\r\nIf you do not agree to any of the statements above, please close this program " +
-                    "now and do not use it.";
-                errorWindow.Title = "Disclaimer";
-                errorWindow.Closed += ErrorWindow_Closed;
-                errorWindow.ShowDialog();
+                DisclaimerWindow disclaimerWindow = new();
+                disclaimerWindow.ShowDialog();
             }
         }
         private void CheckForAntiCheatRunning()
@@ -399,36 +394,39 @@ namespace Force.Halo.Checkpoints
 
         protected override void OnClosed(EventArgs e)
         {
-            isProgramClosing = true;
-
-            if (KeyBindingTextBox.Text != string.Empty)
+            if (Properties.Settings.Default.IsDisclaimerAgreed)
             {
-                Properties.Settings.Default.HotKeyPreference = rawHotKeyString;
-            }
+                isProgramClosing = true;
 
-            if (gameSelected != string.Empty)
-            {
-                Properties.Settings.Default.LastGameSelected = gameSelected;
-                Properties.Settings.Default.LastGameFriendlyName = friendlyGameName;
-                Properties.Settings.Default.LastGameSelectedLabel = GameSelectedTextBlock.Text;
-            }
+                if (KeyBindingTextBox.Text != string.Empty)
+                {
+                    Properties.Settings.Default.HotKeyPreference = rawHotKeyString;
+                }
 
-            if (isControllerButtonSelected)
-            {
-                Properties.Settings.Default.IsControllerButtonSelectedPreference = true;
-                Properties.Settings.Default.ControllerButtonPreference = controllerButtonSelected;
-                Properties.Settings.Default.ControllerTriggerPreference = controllerTriggerSelected;
-                Properties.Settings.Default.ControllerButtonPreferenceString = ControllerButtonBindingTextBlock.Text;
-            }
+                if (gameSelected != string.Empty)
+                {
+                    Properties.Settings.Default.LastGameSelected = gameSelected;
+                    Properties.Settings.Default.LastGameFriendlyName = friendlyGameName;
+                    Properties.Settings.Default.LastGameSelectedLabel = GameSelectedTextBlock.Text;
+                }
 
-            Properties.Settings.Default.Save();
+                if (isControllerButtonSelected)
+                {
+                    Properties.Settings.Default.IsControllerButtonSelectedPreference = true;
+                    Properties.Settings.Default.ControllerButtonPreference = controllerButtonSelected;
+                    Properties.Settings.Default.ControllerTriggerPreference = controllerTriggerSelected;
+                    Properties.Settings.Default.ControllerButtonPreferenceString = ControllerButtonBindingTextBlock.Text;
+                }
 
-            if (_hookID != IntPtr.Zero)
-            {
-                UninstallHook();
+                Properties.Settings.Default.Save();
+
+                if (_hookID != IntPtr.Zero)
+                {
+                    UninstallHook();
+                }
+                _instance = null;
+                base.OnClosed(e);
             }
-            _instance = null;
-            base.OnClosed(e);
         }
 
         private void ShowErrorWindow(string errorMessage)
@@ -446,7 +444,7 @@ namespace Force.Halo.Checkpoints
         private void ErrorWindow_Closed(object? sender, EventArgs e)
         {
             isErrorWindowOpen = false;
-            
+
             // Unsubscribe from the Closed event.
             if (sender is ErrorWindow errorWindow)
             {
@@ -656,7 +654,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloCEButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedTextBlock.Text = $"Game selected: Halo CE";
+            GameSelectedTextBlock.Text = $"Game selected: Halo: Combat Evolved";
             gameSelected = "Halo CE";
             friendlyGameName = "Halo: Combat Evolved";
             StatusTextBlock.Text = "Status: Awaiting input";
@@ -704,7 +702,7 @@ namespace Force.Halo.Checkpoints
 
         private void HaloCEOGButton_Click(object sender, RoutedEventArgs e)
         {
-            GameSelectedTextBlock.Text = "Game selected: Halo: CE (not MCC)";
+            GameSelectedTextBlock.Text = "Game selected: Halo: Combat Evolved (not MCC)";
             gameSelected = "Halo CE OG";
             friendlyGameName = "The original Halo: Combat Evolved for PC";
             StatusTextBlock.Text = "Status: Awaiting input";
