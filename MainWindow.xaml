@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Force.Halo.Checkpoints"
         mc:Ignorable="d"
-        Title="Force Halo Checkpoints" Height="550" Width="400"
+        Title="Force Halo Checkpoints" Height="540" Width="400"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
         KeyDown="ForceCheckpointWithEnterKey">
     <Border BorderBrush="Gray" BorderThickness="1">
@@ -39,7 +39,7 @@
             </Border>
             <Grid Background="#FF2D2B2B" Grid.Row="1">
                 <Label x:Name="KeyBindingLabel" Content="Keyboard button binding" HorizontalAlignment="Left" Margin="198,25,0,0" VerticalAlignment="Top" Width="154" Foreground="White" RenderTransformOrigin="0.533,1.296"/>
-                <Button x:Name="HaloCEButton" Content="Halo: Combat Evolved" HorizontalAlignment="Left" Margin="30,89,0,0" VerticalAlignment="Top" Click="HaloCEButton_Click" Width="131" Foreground="White">
+                <Button x:Name="HaloCEButton" Content="Halo: Combat Evolved" HorizontalAlignment="Left" Margin="30,52,0,0" VerticalAlignment="Top" Click="HaloCEButton_Click" Width="132" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -56,7 +56,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="Halo2Button" Content="Halo 2" HorizontalAlignment="Left" Margin="30,121,0,0" VerticalAlignment="Top" Click="Halo2Button_Click" Width="61" Foreground="White">
+                <Button x:Name="Halo2Button" Content="Halo 2" HorizontalAlignment="Left" Margin="30,84,0,0" VerticalAlignment="Top" Click="Halo2Button_Click" Width="62" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -73,7 +73,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="Halo3Button" Content="Halo 3" HorizontalAlignment="Left" Margin="30,153,0,0" VerticalAlignment="Top" Click="Halo3Button_Click" Width="61" Foreground="White">
+                <Button x:Name="Halo3Button" Content="Halo 3" HorizontalAlignment="Left" Margin="30,116,0,0" VerticalAlignment="Top" Click="Halo3Button_Click" Width="62" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -90,7 +90,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="Halo3ODSTButton" Content="Halo 3: ODST" HorizontalAlignment="Left" Margin="30,185,0,0" VerticalAlignment="Top" Click="Halo3ODSTButton_Click" Width="84" Foreground="White">
+                <Button x:Name="Halo3ODSTButton" Content="Halo 3: ODST" HorizontalAlignment="Left" Margin="30,148,0,0" VerticalAlignment="Top" Click="Halo3ODSTButton_Click" Width="84" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -107,7 +107,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="HaloReachButton" Content="Halo: Reach" HorizontalAlignment="Left" Margin="30,217,0,0" VerticalAlignment="Top" Click="HaloReachButton_Click" Width="84" Foreground="White">
+                <Button x:Name="HaloReachButton" Content="Halo: Reach" HorizontalAlignment="Left" Margin="30,180,0,0" VerticalAlignment="Top" Click="HaloReachButton_Click" Width="84" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -124,7 +124,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="Halo4Button" Content="Halo 4" HorizontalAlignment="Left" Margin="30,0,0,0" VerticalAlignment="Center" Click="Halo4Button_Click" Width="61" Foreground="White">
+                <Button x:Name="Halo4Button" Content="Halo 4" HorizontalAlignment="Left" Margin="30,212,0,0" VerticalAlignment="Top" Click="Halo4Button_Click" Width="62" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -141,7 +141,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Center" Margin="0,413,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
+                <Button x:Name="ForceCheckpointButton" Content="Force Checkpoint" HorizontalAlignment="Center" Margin="0,401,0,0" VerticalAlignment="Top" Click="ForceCheckpointButton_Click" Width="262" Foreground="White" Height="51">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -201,8 +201,10 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting game selection" TextWrapping="Wrap" Foreground="White" Margin="202,198,28,122"/>
-                <Button x:Name="HaloCEOGButton" Content="Halo: Combat Evolved" HorizontalAlignment="Left" Margin="30,294,0,0" VerticalAlignment="Top" Click="HaloCEOGButton_Click" Width="131" Foreground="White">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="202,191,7,112">
+                    <TextBlock x:Name="StatusTextBlock" Text="Status: Awaiting game selection" TextWrapping="Wrap" Foreground="White" Margin="0" Width="Auto" Height="Auto"/>
+                </ScrollViewer>
+                <Button x:Name="HaloCEOGButton" Content="Halo: Combat Evolved" HorizontalAlignment="Left" Margin="30,15,0,0" VerticalAlignment="Center" Click="HaloCEOGButton_Click" Width="131" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -219,7 +221,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="HaloCustomEditionButton" Content="Halo: Custom Edition" HorizontalAlignment="Left" Margin="30,326,0,0" VerticalAlignment="Top" Click="HaloCustomEditionButton_Click" Width="131" Foreground="White">
+                <Button x:Name="HaloCustomEditionButton" Content="Halo: Custom Edition" HorizontalAlignment="Left" Margin="30,282,0,0" VerticalAlignment="Top" Click="HaloCustomEditionButton_Click" Width="131" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -236,7 +238,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="Halo2VistaButton" Content="Halo 2: Vista" HorizontalAlignment="Left" Margin="30,358,0,0" VerticalAlignment="Top" Click="Halo2VistaButton_Click" Width="84" Foreground="White">
+                <Button x:Name="Halo2VistaButton" Content="Halo 2: Vista" HorizontalAlignment="Left" Margin="30,314,0,0" VerticalAlignment="Top" Click="Halo2VistaButton_Click" Width="84" Foreground="White">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -273,9 +275,9 @@
                 </Button>
                 <TextBox x:Name="ControllerButtonBindingTextBlock" HorizontalAlignment="Left" Margin="202,142,0,0" Text="" VerticalAlignment="Top" Width="150" Background="#FF464646" Foreground="White"
                     IsReadOnly="True"/>
-                <TextBlock x:Name="GameSelectedTextBlock" Text="Game selected: None" TextWrapping="Wrap" Foreground="White" Margin="252,227,-22,253"/>
-                <Label Content="Master Chief Collection" x:Name="MCCLabel" HorizontalAlignment="Left" Margin="22,28,0,0" VerticalAlignment="Top" Height="23" Width="139" Foreground="White"/>
-                <Border BorderBrush="#FF1E699B" BorderThickness="2" HorizontalAlignment="Left" Height="18" Margin="22,51,0,0" VerticalAlignment="Top" Width="164"/>
+                <TextBlock x:Name="GameSelectedTextBlock" Text="Game selected: None" TextWrapping="Wrap" Foreground="White" Margin="34,348,201,122"/>
+                <Label Content="Master Chief Collection" x:Name="MCCLabel" HorizontalAlignment="Left" Margin="23,25,0,0" VerticalAlignment="Top" Height="23" Width="139" Foreground="White"/>
+                <Border BorderBrush="#FF1E699B" BorderThickness="2" HorizontalAlignment="Left" Height="215" Margin="22,25,0,0" VerticalAlignment="Top" Width="154"/>
             </Grid>
         </Grid>
     </Border>
