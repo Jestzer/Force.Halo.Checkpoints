@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Force.Halo.Checkpoints"
         mc:Ignorable="d"
-                Title="Error" Height="250" Width="450"
+                Title="Error" Height="350" Width="600"
     WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Border BorderBrush="Gray" BorderThickness="1">
         <Grid>
@@ -25,26 +25,11 @@
                 <Grid Margin="32,10,45,58">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-4,0,-15,0">
                         <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap"
-               Text="By pressing OK, you agree to the following:
-                    - You will disable Easy Anti-Cheat or Anti-Cheat before attempting to use this software.
-                    - You will not attempt to use this software with Easy Anti-Cheat or Anti-Cheat running.
-                    - You understand that a failure to follow the above statements will result in bans related
-                    but not limited to software, hardware, community, or any other ban
-                    - You will disclose to any relevant audience that you are using this program prior to using
-                    this program.
-                    If you do not agree to any of the statements above, please close this program
-                    now and do not use it." Foreground="White" 
-               FontSize="11" TextAlignment="Left" HorizontalAlignment="Left" 
-               VerticalAlignment="Top"/>
+                    Text="By pressing 'I agree', you agree to the following:&#x0a;&#x0a;- You will disable Easy Anti-Cheat or Anti-Cheat before attempting to use this software.&#x0a;- You will not attempt to use this software with Easy Anti-Cheat or Anti-Cheat running.&#x0a;- You understand that a failure to follow the above statements will result in bans related, but not limited to software, hardware, community, or any other ban.&#x0a;- You will disclose to any relevant audience that you are using this program prior to using this program.&#x0a;&#x0a;If you do not agree to any of the statements above, please close this program now and do not use it." 
+                    Foreground="White" TextAlignment="Left" FontSize="14" Height="211"/>
                     </ScrollViewer>
                 </Grid>
-                <TextBlock x:Name="URLTextBlock" TextWrapping="Wrap" Foreground="White" Margin="32,31,45,32" FontSize="14" Visibility="Hidden" IsEnabled="False" TextAlignment="Center"> 
-                       A newer version is available! Please download it from 
-                    <Hyperlink NavigateUri="https://github.com/Jestzer/Force.Halo.Checkpoints/releases/latest" RequestNavigate="Hyperlink_RequestNavigate">
-                        GitHub
-                    </Hyperlink>.
-                </TextBlock>
-                <Button x:Name="OKButton" Content="I agree" HorizontalAlignment="Left" Margin="32,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
+                <Button x:Name="IAgreeButton" Content="I agree" HorizontalAlignment="Left" Margin="94,260,0,0" VerticalAlignment="Top" Click="IAgreeButton_Click" Width="152" Foreground="White" Height="42">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">
@@ -61,7 +46,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Button x:Name="DisagreeButton" Content="I disagree" HorizontalAlignment="Left" Margin="251,160,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
+                <Button x:Name="DisagreeButton" Content="I disagree" HorizontalAlignment="Left" Margin="339,260,0,0" VerticalAlignment="Top" Click="CloseButton_Click" Width="152" Foreground="White" Height="42">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#FF464646" BorderBrush="#FF1E699B" BorderThickness="2">

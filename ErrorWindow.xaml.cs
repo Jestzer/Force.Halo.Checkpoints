@@ -15,7 +15,6 @@ namespace Force.Halo.Checkpoints
         // Implement window dragging with the mouse.
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
         }

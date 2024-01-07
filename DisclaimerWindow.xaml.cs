@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Force.Halo.Checkpoints
 {
@@ -21,16 +10,21 @@ namespace Force.Halo.Checkpoints
             InitializeComponent();
         }
 
-        // Implement window dragging with the mouse.
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
+            Application.Current.Shutdown();
+        }
+
+        private void IAgreeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.IsDisclaimerAgreed = true;
+            Properties.Settings.Default.Save();
             Close();
         }
     }
