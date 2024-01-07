@@ -801,7 +801,7 @@ namespace Force.Halo.Checkpoints
 
                 if (dllBaseAddress == IntPtr.Zero)
                 {
-                    ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                    ShowErrorWindow($"{friendlyGameName} is not running in the MCC.");
                     mccGameIsRunning = false;
                     return;
                 }
@@ -835,7 +835,7 @@ namespace Force.Halo.Checkpoints
                             mccGameIsRunning = false;
                             Dispatcher.Invoke(() =>
                             {
-                                ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                                ShowErrorWindow($"{friendlyGameName} is not running in the MCC.");
                             });
                             return;
                         }
@@ -849,7 +849,7 @@ namespace Force.Halo.Checkpoints
                             mccGameIsRunning = false;
                             Dispatcher.Invoke(() =>
                             {
-                                ShowErrorWindow($"{gameSelected} is not running in the MCC.");
+                                ShowErrorWindow($"{friendlyGameName} is not running in the MCC.");
                             });
                             return;
                         }
@@ -864,7 +864,7 @@ namespace Force.Halo.Checkpoints
             }
             catch (Exception ex)
             {
-                ShowErrorWindow($"The attempt to check {gameSelected} in The Master Chief Collection failed. " +
+                ShowErrorWindow($"The attempt to check {friendlyGameName} in The Master Chief Collection failed. " +
                     "This is the automatic error message that was produced: " + ex.Message);
             }
         }
@@ -951,8 +951,16 @@ namespace Force.Halo.Checkpoints
             }
             catch (Exception ex)
             {
-                ShowErrorWindow("The attempt to force a checkpoint failed. This is the automatic error message: " + ex.Message);
-                return;
+                if (ex.Message == "Access is denied.")
+                {
+                    ShowErrorWindow($"A checkpoint cannot be forced because you are running {friendlyGameName} with administrative privileges, but not this program with " +
+                        "administrative privileges. Either run this program with administrative privileges or run the game without administrative privileges.");
+                }
+                else
+                {
+                    ShowErrorWindow("The attempt to force a checkpoint failed. This is the automatic error message: " + ex.Message);
+                    return;
+                }
             }
         }
 
