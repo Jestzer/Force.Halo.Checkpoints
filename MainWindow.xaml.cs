@@ -562,6 +562,14 @@ namespace Force.Halo.Checkpoints
                 Key key = (Key)Enum.Parse(typeof(Key), hotkeyName, true);
                 _currentHotkey = (uint)KeyInterop.VirtualKeyFromKey(key);
 
+                if (hotkeyName == "RETURN")
+                {
+                    KeyBindingTextBox.Text = string.Empty;
+                    rawHotKeyString = string.Empty;
+                    ShowErrorWindow($"You may not use Enter/Return as your hotkey.");
+                    UnregisterCurrentHotkey();
+                }
+
                 KeyBindingTextBox.Text = rawHotKeyString;
                 KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "(?<!^)([A-Z])", " $1");
                 KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "D(\\d)", "$1");
@@ -809,11 +817,11 @@ namespace Force.Halo.Checkpoints
                 byte[] buffer = new byte[4];
 
                 IntPtr addressToCheck = IntPtr.Add(dllBaseAddress, offset);
-                if (gameSelected == "Halo Reach" || gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
+                if (gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
                 {
                     buffer = new byte[1];
                 }
-                else if (gameSelected == "Halo CE")
+                else if (gameSelected == "Halo CE" || gameSelected == "Halo Reach")
                 {
                     buffer = new byte[5];
                 }
@@ -826,7 +834,7 @@ namespace Force.Halo.Checkpoints
 
                 if (result && bytesRead == buffer.Length)
                 {
-                    if (gameSelected == "Halo Reach" || gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
+                    if (gameSelected == "Halo 2" || gameSelected == "Halo 3" || gameSelected == "Halo 4")
                     {
                         byte valueRead = buffer[0];
 
@@ -968,115 +976,118 @@ namespace Force.Halo.Checkpoints
         {
             if (isErrorWindowOpen == false)
             {
-                if (ForceCheckpointButton.IsEnabled == true)
+                if (!isRecordingInput && !isRecordingControllerInput)
                 {
-                    try
+                    if (ForceCheckpointButton.IsEnabled == true)
                     {
-                        if (gameSelected == "Halo CE")
+                        try
                         {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            if (gameSelected == "Halo CE")
                             {
-                                CheckIfMCCGameIsRunning("Halo CE", "halo1.dll", 0x2DCF80B, "Halo1", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                                    CheckIfMCCGameIsRunning("Halo CE", "halo1.dll", 0x2DCF80B, "Halo1", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo CE", "halo1.dll", 0x2B23707);
+                                    }
                                 }
                             }
-                        }
-                        else if (gameSelected == "Halo 2")
-                        {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            else if (gameSelected == "Halo 2")
                             {
-                                CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                                    CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                                    }
                                 }
                             }
-                        }
-                        else if (gameSelected == "Halo 3")
-                        {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            else if (gameSelected == "Halo 3")
                             {
-                                CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                                    CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                                    }
                                 }
                             }
-                        }
-                        else if (gameSelected == "Halo 4")
-                        {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            else if (gameSelected == "Halo 4")
                             {
-                                CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                                    CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                                    }
                                 }
                             }
-                        }
-                        else if (gameSelected == "Halo Reach")
-                        {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            else if (gameSelected == "Halo Reach")
                             {
-                                CheckIfMCCGameIsRunning("Halo Reach", "xaudio2_9.DLL", 0x889E2, "1", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                                    CheckIfMCCGameIsRunning("Halo Reach", "haloreach.dll", 0xB87AE7, "Reach", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                                    }
                                 }
                             }
-                        }
-                        else if (gameSelected == "Halo 3 ODST")
-                        {
-                            CheckIfGameIsRunning("MCC", out bool gameIsRunning);
-                            if (gameIsRunning)
+                            else if (gameSelected == "Halo 3 ODST")
                             {
-                                CheckIfMCCGameIsRunning("Halo 3 ODST", "halo3odst.dll", 0x2174F43, "ODST", out bool mccGameIsRunning);
-                                if (mccGameIsRunning)
+                                CheckIfGameIsRunning("MCC", out bool gameIsRunning);
+                                if (gameIsRunning)
                                 {
-                                    ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                                    CheckIfMCCGameIsRunning("Halo 3 ODST", "halo3odst.dll", 0x2174F43, "ODST", out bool mccGameIsRunning);
+                                    if (mccGameIsRunning)
+                                    {
+                                        ForceCheckpoint("Halo 3 ODST", "halo3odst.dll", 0x20FF6BC);
+                                    }
                                 }
                             }
+                            else if (gameSelected == "Halo CE OG")
+                            {
+                                ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+                            }
+                            else if (gameSelected == "Halo Custom Edition")
+                            {
+                                ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
+                            }
+                            else if (gameSelected == "Halo 2 Vista")
+                            {
+                                ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
+                            }
+                            else
+                            {
+                                StatusTextBlock.Text = "Status: Please select a game first!";
+                                ShowErrorWindow("Select a game first.");
+                            }
                         }
-                        else if (gameSelected == "Halo CE OG")
+                        catch (Exception ex)
                         {
-                            ForceCheckpoint("Halo CE OG", "halo.exe", 0x31973F);
+                            ShowErrorWindow("Something went wrong in the function for the button forcing a checkpoint. " +
+                                "Here's the automatic error message: " + ex.Message);
                         }
-                        else if (gameSelected == "Halo Custom Edition")
-                        {
-                            ForceCheckpoint("Halo Custom Edition", "haloce.exe", 0x2B47CF);
-                        }
-                        else if (gameSelected == "Halo 2 Vista")
-                        {
-                            ForceCheckpoint("Halo 2 Vista", "halo2.exe", 0x482250);
-                        }
-                        else
-                        {
-                            StatusTextBlock.Text = "Status: Please select a game first!";
-                            ShowErrorWindow("Select a game first.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ShowErrorWindow("Something went wrong in the function for the button forcing a checkpoint. " +
-                            "Here's the automatic error message: " + ex.Message);
-                    }
-                }
-                else
-                {
-                    if (gameSelected == "Halo 2 Vista")
-                    {
-                        ShowErrorWindow("Anti-Cheat is running!");
                     }
                     else
                     {
-                        ShowErrorWindow("Easy Anti-Cheat is running!");
+                        if (gameSelected == "Halo 2 Vista")
+                        {
+                            ShowErrorWindow("Anti-Cheat is running!");
+                        }
+                        else
+                        {
+                            ShowErrorWindow("Easy Anti-Cheat is running!");
+                        }
                     }
                 }
             }
