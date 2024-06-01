@@ -196,7 +196,7 @@ namespace Force.Halo.Checkpoints
                 antiCheatCheckThread.Start();
             }
         }
-        private void DisclaimerWindow()
+        private static void DisclaimerWindow()
         {
             if (Properties.Settings.Default.IsControllerButtonSelectedPreference == false)
             {
@@ -552,7 +552,21 @@ namespace Force.Halo.Checkpoints
             }
         }
 
-        private void RegisterCurrentHotkey()
+        private string GetRawHotKeyString()
+        {
+            return rawHotKeyString;
+        }
+
+        [GeneratedRegex("(?<!^)([A-Z])")]
+        private static partial Regex SpacesForNonFirstUppercaseLetters();
+
+        [GeneratedRegex("D(\\d)")]
+        private static partial Regex RemoveLetterDFromNumber();
+
+        [GeneratedRegex("Num Pad")]
+        private static partial Regex NumPadToNumberPad();
+
+        private void RegisterCurrentHotkey(string rawHotKeyString)
         {
             string hotkeyName = rawHotKeyString.ToUpper();
 
@@ -571,9 +585,9 @@ namespace Force.Halo.Checkpoints
                 }
 
                 KeyBindingTextBox.Text = rawHotKeyString;
-                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "(?<!^)([A-Z])", " $1");
-                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "D(\\d)", "$1");
-                KeyBindingTextBox.Text = Regex.Replace(KeyBindingTextBox.Text, "Num Pad", "Number Pad ");
+                KeyBindingTextBox.Text = SpacesForNonFirstUppercaseLetters().Replace(KeyBindingTextBox.Text, " $1");
+                KeyBindingTextBox.Text = RemoveLetterDFromNumber().Replace(KeyBindingTextBox.Text, "$1");
+                KeyBindingTextBox.Text = NumPadToNumberPad().Replace(KeyBindingTextBox.Text, "Number Pad ");
 
                 KeyBindingTextBox.Text = KeyBindingTextBox.Text switch
                 {
@@ -602,7 +616,7 @@ namespace Force.Halo.Checkpoints
             catch (Exception ex)
             {
                 KeyBindingTextBox.Text = string.Empty;
-                rawHotKeyString = string.Empty;
+                rawHotKeyString = string.Empty; // This is here because likely something went wrong, so yes, Visual Studio, it technically isn't necessary.
                 ShowErrorWindow($"Oh dear, you've ran into an error. Here's the automatic message: " + ex.Message);
                 UnregisterCurrentHotkey();
                 return;
@@ -626,7 +640,7 @@ namespace Force.Halo.Checkpoints
 
             if (Properties.Settings.Default.HotKeyPreference != string.Empty)
             {
-                RegisterCurrentHotkey();
+                RegisterCurrentHotkey(GetRawHotKeyString());
             }
         }
 
@@ -1138,7 +1152,7 @@ namespace Force.Halo.Checkpoints
 
             // Unregister the previous hotkey and register the new one.
             UnregisterCurrentHotkey();
-            RegisterCurrentHotkey();
+            RegisterCurrentHotkey(GetRawHotKeyString());
 
             RecordInputButton.Content = "Start Recording Input";
         }
