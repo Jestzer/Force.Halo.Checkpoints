@@ -273,7 +273,6 @@ namespace Force.Halo.Checkpoints
                                 {
                                     Dispatcher.Invoke(() =>
                                     {
-                                        // Thanks for nothing, WPF.
                                         ForceCheckpointButton.Content = "Anti-Cheat is running in Silent Cartographer!\r\n                          (Halo 2: Vista)";
                                         ForceCheckpointButton.IsEnabled = false;
                                     });
@@ -289,7 +288,10 @@ namespace Force.Halo.Checkpoints
                             }
                             else
                             {
-                                ShowErrorWindow("Failed to read memory.");
+                                Dispatcher.Invoke(() =>
+                                {
+                                    ShowErrorWindow("Failed to read memory.");
+                                });
                             }
                         }
                         catch (Exception ex)
@@ -298,14 +300,20 @@ namespace Force.Halo.Checkpoints
 
                             if (failureCount < 3)
                             {
-                                // Give Halo 2 Vista in all its old, terribleness, 3 seconds to breathe.
-                                Thread.Sleep(1000);
+                                Dispatcher.Invoke(() =>
+                                {
+                                    // Give Halo 2 Vista in all its old, terribleness, 3 seconds to breathe.
+                                    Thread.Sleep(1000);
+                                });
                             }
                             else
                             {
-                                ShowErrorWindow("There's an issue with your copy of Halo 2: Vista. Here's the full error message: " + ex.Message);
-                                gameSelected = string.Empty;
-                                StatusTextBlock.Text = "Status: Issue with H2V.";
+                                Dispatcher.Invoke(() =>
+                                {
+                                    ShowErrorWindow("There's an issue with your copy of Halo 2: Vista. Here's the full error message: " + ex.Message);
+                                    gameSelected = string.Empty;
+                                    StatusTextBlock.Text = "Status: Issue with H2V.";
+                                });
                             }
                         }
                     }
@@ -329,7 +337,6 @@ namespace Force.Halo.Checkpoints
             {
                 if (!isButtonCoolDownHappening)
                 {
-
                     if (isControllerButtonSelected && isRecordControllerInputDone)
                     {
                         XInputState state = new();
