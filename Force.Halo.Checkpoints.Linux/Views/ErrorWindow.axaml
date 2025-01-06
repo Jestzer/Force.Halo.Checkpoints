@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="250"
+	x:Class="Force.Halo.Checkpoints.Linux.Views.ErrorWindow"
+	Title="Error"
+	Width="450" Height="250"
+	CanResize="False"
+	Icon="/Assets/icon.png"
+	Background="#FF2D2B2B"
+	WindowStartupLocation="CenterOwner">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<TextBlock Name="ErrorTextBlock"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Margin="0,0,0,50"
+			TextAlignment="Center"
+			Background="#FF2D2B2B"
+			Foreground="White"
+			Text="Error messages will appear here."
+			MaxWidth="410"
+			TextWrapping="Wrap" />
+		<Button Name="OKButton"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Margin="0,180,0,0"
+			Click="OKButton_Click"
+			Height="50"
+			Width="150">
+			<Button.Content>
+				<TextBlock Text="OK"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Foreground="White" />
+			</Button.Content>
+			<Button.Styles>
+				<Style Selector="Button">
+					<Setter Property="Background" Value="#FF464646" />
+					<Setter Property="BorderBrush" Value="#FF1E699B" />
+					<Setter Property="BorderThickness" Value="2" />
+					<Setter Property="TextElement.Foreground" Value="White" />
+				</Style>
+				<Style Selector="Button:pointerover /template/ Button">
+					<Setter Property="Background" Value="Gray" />
+				</Style>
+				<Style Selector="Button:pressed /template/ Button">
+					<Setter Property="Background" Value="#FFCECECE" />
+				</Style>
+				<Style Selector="Button:disabled /template/ Button">
+					<Setter Property="Background" Value="#FF858585" />
+					<Setter Property="BorderBrush" Value="#FF858585" />
+					<Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+				</Style>
+			</Button.Styles>
+		</Button>
+	</Grid>
+</Window>
