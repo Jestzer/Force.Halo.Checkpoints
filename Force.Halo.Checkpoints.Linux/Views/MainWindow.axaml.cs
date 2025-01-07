@@ -9,25 +9,19 @@ namespace Force.Halo.Checkpoints.Linux.Views;
 
 public partial class MainWindow : Window
 {
-    private string gameSelected;
+    private string gameSelected = "none";
+    private const int PTRACE_ATTACH = 16;
+    private const int PTRACE_DETACH = 17;
+    private const int PTRACE_POKEDATA = 5;
 
-    private const int O_RDONLY = 0;
-    private const int O_RDWR = 2;
-
-    [DllImport("libc.so.6", SetLastError = true)]
-    private static extern IntPtr open(string pathname, int flags);
-
-    [DllImport("libc.so.6", SetLastError = true)]
-    private static extern long pwrite(IntPtr fd, byte[] buf, ulong count, long offset);
-
-    [DllImport("libc.so.6", SetLastError = true)]
-    private static extern int close(IntPtr fd);
+    [DllImport("libc", SetLastError = true)]
+    private static extern int ptrace(int request, int pid, IntPtr addr, IntPtr data);
 
     public MainWindow()
     {
         InitializeComponent();
     }
-    
+
     private void ShowErrorWindow(string errorMessage)
     {
         Dispatcher.UIThread.Post(async () =>
@@ -35,7 +29,6 @@ public partial class MainWindow : Window
             ErrorWindow errorWindow = new();
             errorWindow.ErrorTextBlock.Text = errorMessage;
 
-            // Check if VisualRoot is not null and is a Window before casting.
             if (VisualRoot is Window window)
             {
                 await errorWindow.ShowDialog(window);
@@ -46,45 +39,53 @@ public partial class MainWindow : Window
             }
         });
     }
-    
-    private void ModifyGameMemory(string processName, long offset, byte value)
+
+    private void ModifyGameMemory(string processName, string moduleName, long offset, byte value)
     {
-        // Locate the process ID (PID)
         int pid = GetProcessIdByName(processName);
         if (pid == -1)
         {
             ShowErrorWindow($"Process '{processName}' not found.");
+            return;
         }
 
-        // Locate the memory file for the process
-        string memPath = $"/proc/{pid}/mem";
-
-        // Open the memory file
-        IntPtr fd = open(memPath, O_RDWR);
-        if (fd.ToInt64() == -1)
+        IntPtr baseAddress = GetModuleBaseAddress(pid, moduleName);
+        if (baseAddress == IntPtr.Zero)
         {
-            ShowErrorWindow("Failed to open process memory file. Ensure you have the necessary permissions.");
+            ShowErrorWindow($"Failed to find the base address of {moduleName}.");
+            return;
+        }
+
+        IntPtr targetAddress = IntPtr.Add(baseAddress, (int)offset);
+
+        if (ptrace(PTRACE_ATTACH, pid, IntPtr.Zero, IntPtr.Zero) == -1)
+        {
+            ShowErrorWindow($"Failed to attach to process {pid}. Ensure you are running as root/sudo.");
+            return;
         }
 
         try
         {
-            byte[] buffer = { value };
-            long result = pwrite(fd, buffer, (ulong)buffer.Length, offset);
-
-            if (result == -1)
+            IntPtr valuePtr = new(value);
+            if (ptrace(PTRACE_POKEDATA, pid, targetAddress, valuePtr) == -1)
             {
-                ShowErrorWindow("Failed to write to memory.");
+                ShowErrorWindow("Failed to write to process memory. Try again.");
+                return;
             }
+
+            ShowErrorWindow("Checkpoint successfully forced!");
         }
         finally
         {
-            close(fd);
+            _ = ptrace(PTRACE_DETACH, pid, IntPtr.Zero, IntPtr.Zero);
         }
     }
 
-    private int GetProcessIdByName(string processName)
+    private static int GetProcessIdByName(string processName)
     {
+        int lastPid = -1; // For whatever reason, this seems to be reliable for Proton. Don't know about anything else. I should probably find a better method.
         string[] procEntries = Directory.GetDirectories("/proc");
+
         foreach (string entry in procEntries)
         {
             if (int.TryParse(Path.GetFileName(entry), out int pid))
@@ -94,42 +95,64 @@ public partial class MainWindow : Window
                     string cmdline = File.ReadAllText($"/proc/{pid}/cmdline");
                     if (cmdline.Contains(processName))
                     {
-                        return pid;
+                        lastPid = pid;
                     }
                 }
                 catch
                 {
-                    // Ignore processes we can't read
+                    // Ignore processes we can't read and hope it's not important.
                 }
             }
         }
 
-        return -1;
+        return lastPid;
     }
-    
+
+    private static IntPtr GetModuleBaseAddress(int pid, string moduleName)
+    {
+        string mapsPath = $"/proc/{pid}/maps";
+        if (!File.Exists(mapsPath))
+        {
+            return IntPtr.Zero;
+        }
+
+        var lines = File.ReadAllLines(mapsPath);
+        foreach (var line in lines)
+        {
+            if (line.Contains(moduleName))
+            {
+                var parts = line.Split('-');
+                if (parts.Length > 0 && long.TryParse(parts[0], System.Globalization.NumberStyles.HexNumber, null, out long address))
+                {
+                    return new IntPtr(address);
+                }
+            }
+        }
+
+        return IntPtr.Zero;
+    }
+
     private void ForceCheckpointButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (gameSelected == null)
+        if (gameSelected == "none")
         {
-            ShowErrorWindow("test");
+            ShowErrorWindow("No game selected.");
         }
         else if (gameSelected == "Halo")
         {
             try
             {
-                ModifyGameMemory("halo", 0x31973F, 1);
-                ShowErrorWindow("Checkpoint forced successfully.");
+                ModifyGameMemory("halo.exe", "halo.exe", 0x31973F, 1);
             }
             catch (Exception ex)
             {
                 ShowErrorWindow($"Failed to force checkpoint: {ex.Message}");
+                return;
             }
-
-            // find the executable, then find the dll in memory and change the offset accordingly.
         }
     }
 
-    private void HaloCEButton_OnClickButton_OnClick(object? sender, RoutedEventArgs e)
+    private void HaloCEButton_OnClick(object? sender, RoutedEventArgs e)
     {
         gameSelected = "Halo";
     }

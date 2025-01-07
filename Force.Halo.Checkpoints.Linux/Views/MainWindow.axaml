@@ -23,8 +23,8 @@
         <Button
             Name="ForceCheckpointButton"
             Grid.Row="1"
-            Margin="10"
-            Content="Analyze"
+            Margin="100"
+            Content="Force Checkpoint"
             Foreground="White"
             Click="ForceCheckpointButton_OnClick">
             <Button.Styles>
@@ -52,9 +52,9 @@
             Name="HaloCEButton"
             Grid.Row="1"
             Margin="10"
-            Content="Analyze"
+            Content="Halo CE"
             Foreground="White"
-            Click="HaloCEButton_OnClickButton_OnClick">
+            Click="HaloCEButton_OnClick">
             <Button.Styles>
                 <Style Selector="Button">
                     <Setter Property="Background" Value="#FF464646" />
