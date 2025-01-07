@@ -66,14 +66,31 @@ public partial class MainWindow : Window
 
         try
         {
-            IntPtr valuePtr = new(value);
-            if (ptrace(PTRACE_POKEDATA, pid, targetAddress, valuePtr) == -1)
+            // For whatever reason, it seems that the first attempt tends to fail. I don't know why it's an issue on Linux, but it seems...
+            // ... reattempting fixes the issue. I've seen it take up to 15 attempts, so I think it's safe to call quits at 30. I'll probably
+            // ... test this more.
+            int attempts = 1;
+            bool successfullyWroteToMemory = false;
+            while (attempts < 30 && !successfullyWroteToMemory)
             {
-                ShowErrorWindow("Failed to write to process memory. Try again.");
-                return;
-            }
+                IntPtr valuePtr = new(value);
+                if (ptrace(PTRACE_POKEDATA, pid, targetAddress, valuePtr) != -1)
+                {
+                    successfullyWroteToMemory = true;
+                    break;
+                }
 
-            ShowErrorWindow("Checkpoint successfully forced!");
+                attempts++;
+                if (attempts >= 30)
+                {
+                    ShowErrorWindow("Failed to write to process memory after 30 attempts. Try again.");
+                    return;
+                }
+            }
+            if (successfullyWroteToMemory)
+            {
+                ShowErrorWindow("Checkpoint successfully forced! Number of attempts: " + attempts);
+            }
         }
         finally
         {
@@ -138,11 +155,19 @@ public partial class MainWindow : Window
         {
             ShowErrorWindow("No game selected.");
         }
-        else if (gameSelected == "Halo")
+        else
         {
             try
             {
-                ModifyGameMemory("halo.exe", "halo.exe", 0x31973F, 1);
+                if (gameSelected == "OGHaloCE")
+                {
+                    ModifyGameMemory("halo.exe", "halo.exe", 0x31973F, 1);
+                }
+                else if (gameSelected == "HaloCEMCC")
+                {
+                    ModifyGameMemory("MCC-Win64-Shipping.exe", "halo1.dll", 0x2B23707, 1);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -154,6 +179,11 @@ public partial class MainWindow : Window
 
     private void HaloCEButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        gameSelected = "Halo";
+        gameSelected = "OGHaloCE";
+    }
+
+    private void HaloCEMCCButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        gameSelected = "HaloCEMCC";
     }
 }

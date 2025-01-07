@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Views/ErrorWindow.axaml" value="Force.Halo.Checkpoints.Linux.csproj" />
         <entry key="Views/MainWindow.axaml" value="Force.Halo.Checkpoints.Linux.csproj" />
       </map>
     </option>
