@@ -78,12 +78,12 @@
             </Button.Styles>
         </Button>
         <Button
-            Name="HaloCEMCCButton"
+            Name="MCCButton"
             Grid.Row="3"
             Margin="20"
-            Content="Halo CE MCC"
+            Content="Master Chief Collection"
             Foreground="White"
-            Click="HaloCEMCCButton_OnClick">
+            Click="MCCButton_OnClick">
             <Button.Styles>
                 <Style Selector="Button">
                     <Setter Property="Background" Value="#FF464646" />
