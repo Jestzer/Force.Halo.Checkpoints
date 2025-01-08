@@ -3,7 +3,6 @@ using Avalonia.Interactivity;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using Avalonia.Threading;
 
@@ -63,13 +62,16 @@ public partial class MainWindow : Window
 
         IntPtr targetAddress = IntPtr.Add(baseAddress, (int)offset);
 
+        // This makes no sense. I don't know why Ptrace has such a goddamned hard time attaching to processes correctly and getting the right goddamned...
+        // ... values from offsets, but since we know what data to expect and what outcome we should be getting from attempting to attach to the process,...
+        // ... just trying again seems to work well enough. I'm sure this is a result of me not fully understanding Ptrace, but w/e.
         int attachAttempts = 1;
         while (attachAttempts < 1000)
         {
             if (ptrace(PtraceAttach, pid, IntPtr.Zero, IntPtr.Zero) == -1)
             {
                 attachAttempts++;
-                ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
                 Thread.Sleep(5);
             }
             else
@@ -88,8 +90,8 @@ public partial class MainWindow : Window
 
         try
         {
-            // For whatever reason, it seems that the first attempt tends to fail. I don't know why it's an issue on Linux, but it seems...
-            // ... reattempting fixes the issue. I've seen it take up to 15 attempts, so I think it's safe to call quits at 30.
+            // Same explaination as the comment above. Basically, my plan is to try the exact same thing and hope for a different outcome.
+            // I've seen the last successful attempt land on like 42 or something, so 60 it is!
             int attempts = 1;
             bool successfullyWroteToMemory = false;
             while (attempts < 60 && !successfullyWroteToMemory)
@@ -106,7 +108,7 @@ public partial class MainWindow : Window
                 {
                     ShowErrorWindow("Failed to force the checkpoint after 60 attempts. " +
                                     "Make sure the game is running and you are running this program as root/sudo.");
-                    ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                    _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
                     return;
                 }
             }
@@ -249,6 +251,9 @@ public partial class MainWindow : Window
             while (gameNumber < 6)
             {
                 gameNumber++;
+
+                // I've already learned my lesson: never trust a published build. I'm not making these empty
+                // ... nor null in case the published build decides to make my life miserable.
                 string gameName = "gameNameEmpty";
                 string moduleName = "moduleNameEmpty";
                 int offset = 0;
@@ -291,7 +296,7 @@ public partial class MainWindow : Window
                         break;
                     default:
                         ShowErrorWindow($"No games in The Master Chief Collection appear to be running.");
-                        ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                        _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
                         return "none";
                 }
                 
@@ -308,11 +313,12 @@ public partial class MainWindow : Window
                 {
                     if (ptrace(PtraceAttach, pid, IntPtr.Zero, IntPtr.Zero) == -1)
                     {
-                        ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                        _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
                         continue;
                     }
                     
-                    // Actually check to make sure we're getting the value from the address provided AKA is the game actually running??
+                    // Having the dll load isn't sufficient enough. We need to check out the value from the targeted address...
+                    // ... and make sure it returns a value only when the respective game is running (or loading, shhhhhh)
                     IntPtr result = ptrace(PtracePeekdata, pid, targetAddress, IntPtr.Zero);
                     long int32Value = result.ToInt64();
                     byte[] bytes = BitConverter.GetBytes(result.ToInt64());
@@ -329,18 +335,19 @@ public partial class MainWindow : Window
                 }
                 finally
                 {
-                    ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                    _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
                 }
 
-                ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+                // "Are you sure you need all these Detaches?" No, but I'd rather have them than not.
+                _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
             }
             attempts++;
-            ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+            _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
         }
 
         ShowErrorWindow(
             $"No games in The Master Chief Collection appear to be running or the game process is occupied by another program, such as PINCE.");
-        ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
+        _ = ptrace(PtraceDetach, pid, IntPtr.Zero, IntPtr.Zero);
 
         return "none";
     }
