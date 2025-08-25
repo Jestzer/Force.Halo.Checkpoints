@@ -8,6 +8,8 @@ using Avalonia.Threading;
 
 namespace Force.Halo.Checkpoints.Linux.Views;
 
+// If you are debugging this with PINCE, MCC's name appears as "MAIN_THREAD"!
+
 public partial class MainWindow : Window
 {
     private string _gameSelected = "none";
@@ -292,7 +294,7 @@ public partial class MainWindow : Window
                         gameName = "Halo: Reach";
                         moduleName = "haloreach.dll";
                         offset = 0xAFBC30;
-                        expectedIntValue = 1869373768;
+                        expectedIntValue = 1667327346;
                         break;
                     default:
                         ShowErrorWindow($"No games in The Master Chief Collection appear to be running.");
