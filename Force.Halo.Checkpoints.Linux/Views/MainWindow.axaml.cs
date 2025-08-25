@@ -196,19 +196,19 @@ public partial class MainWindow : Window
                             ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo1.dll", 0x2B23707, 1);
                             break;
                         case "Halo 2":
-                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo2.dll", 0xE6FD7E, 1);
+                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo2.dll", 0xE70D7E, 1);
                             break;
                         case "Halo 3":
-                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo3.dll", 0x20B86AC, 1);
+                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo3.dll", 0x20B96AC, 1);
                             break;
                         case "Halo 4":
-                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo4.dll", 0x293DE2F, 1);
+                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo4.dll", 0x293DEAF, 1);
                             break;
                         case "Halo 3: ODST":
                             ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "halo3odst.dll", 0x20FF6BC, 1);
                             break;
                         case "Halo: Reach":
-                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "haloreach.dll", 0x263EB2E, 1);
+                            ModifyGameMemory("MCC", "MCC-Win64-Shipping.exe", "haloreach.dll", 0x263EABE, 1);
                             break;
                         case "none":
                             break;
@@ -275,7 +275,7 @@ public partial class MainWindow : Window
                     case 3:
                         gameName = "Halo 3";
                         moduleName = "halo3.dll";
-                        offset = 0x1FC56C4;
+                        offset = 0x46BCD0C;
                         break;
                     case 4:
                         gameName = "Halo 4";
@@ -291,7 +291,7 @@ public partial class MainWindow : Window
                     case 6:
                         gameName = "Halo: Reach";
                         moduleName = "haloreach.dll";
-                        offset = 0xB87AE7;
+                        offset = 0xAFBC30;
                         expectedIntValue = 1869373768;
                         break;
                     default:

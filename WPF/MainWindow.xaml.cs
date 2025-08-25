@@ -1025,7 +1025,7 @@ namespace Force.Halo.Checkpoints
                                     CheckIfMCCGameIsRunning("Halo 2", "mss64dsp.flt", 0x24690, "1", out bool mccGameIsRunning);
                                     if (mccGameIsRunning)
                                     {
-                                        ForceCheckpoint("Halo 2", "halo2.dll", 0xE6FD7E);
+                                        ForceCheckpoint("Halo 2", "halo2.dll", 0xE70D7E);
                                     }
                                 }
                             }
@@ -1034,10 +1034,10 @@ namespace Force.Halo.Checkpoints
                                 CheckIfGameIsRunning("MCC", out bool gameIsRunning);
                                 if (gameIsRunning)
                                 {
-                                    CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x1FC56C4, "1", out bool mccGameIsRunning);
+                                    CheckIfMCCGameIsRunning("Halo 3", "halo3.dll", 0x46BCD0C, "1", out bool mccGameIsRunning);
                                     if (mccGameIsRunning)
                                     {
-                                        ForceCheckpoint("Halo 3", "halo3.dll", 0x20B86AC);
+                                        ForceCheckpoint("Halo 3", "halo3.dll", 0x20B96AC);
                                     }
                                 }
                             }
@@ -1049,7 +1049,7 @@ namespace Force.Halo.Checkpoints
                                     CheckIfMCCGameIsRunning("Halo 4", "halo4.dll", 0xE3B005, "1", out bool mccGameIsRunning);
                                     if (mccGameIsRunning)
                                     {
-                                        ForceCheckpoint("Halo 4", "halo4.dll", 0x293DE2F);
+                                        ForceCheckpoint("Halo 4", "halo4.dll", 0x293DEAF);
                                     }
                                 }
                             }
@@ -1058,10 +1058,10 @@ namespace Force.Halo.Checkpoints
                                 CheckIfGameIsRunning("MCC", out bool gameIsRunning);
                                 if (gameIsRunning)
                                 {
-                                    CheckIfMCCGameIsRunning("Halo Reach", "haloreach.dll", 0xB87AE7, "Reach", out bool mccGameIsRunning);
+                                    CheckIfMCCGameIsRunning("Halo Reach", "haloreach.dll", 0xAFBC30, "reach", out bool mccGameIsRunning);
                                     if (mccGameIsRunning)
                                     {
-                                        ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EB2E);
+                                        ForceCheckpoint("Halo Reach", "haloreach.dll", 0x263EABE);
                                     }
                                 }
                             }
