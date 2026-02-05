@@ -19,3 +19,8 @@ Notes:
 - Doesn't support Halo Wars nor Halo Spartan Assault/Strike since I don't believe any of those games have checkpoints.
 - The Enter and Print Screen buttons cannot be used as hotkeys. I don't intend to add them (except maybe the Enter key, if people really want it.)
 - If the hotkeys don't seem to be working, try clicking the checkpoint button. There's a chance you have Halo running as an admin, but not the program to force the checkpoint.
+
+  For folks looking at the source code, the WPF folder is the original, Windows version of this program. I have made a version that also technically works on Linux, but it's a bodge, and haven't had a desire to polish it. It uses the Avalonia framework.
+
+
+  By the way, if you just want the console command to force a checkpoint in Halo: Custom Edition, it's "game_save_totally_unsafe". You need to enable devmode to use this, or else you'll get an error stating that the command cannot be executed at this time.
