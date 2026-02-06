@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:Force.Halo.Checkpoints.Linux.ViewModels"
     Title="Force Halo Checkpoints"
-    Width="675"
+    Width="560"
     Height="500"
     CanResize="False"
     x:DataType="vm:MainWindowViewModel"
@@ -14,18 +14,211 @@
     Icon="/Assets/icon.png"
     WindowStartupLocation="CenterScreen">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <StackPanel Margin="16" Spacing="12">
+        <Border
+            Background="#FF3A3838"
+            BorderBrush="#FF1E699B"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="10"
+            Margin="0,0,0,8">
+            <DockPanel LastChildFill="True">
+                <Border
+                    Name="AttachStatusIndicator"
+                    Width="10"
+                    Height="10"
+                    CornerRadius="5"
+                    Background="#FFC62828"
+                    Margin="0,0,8,0"
+                    DockPanel.Dock="Left" />
+                <TextBlock
+                    Name="AttachStatusText"
+                    Foreground="White"
+                    Text="Not attached. Select a game to try attaching." />
+            </DockPanel>
+        </Border>
+
+        <StackPanel Spacing="8">
+            <TextBlock Foreground="White" Text="Select Game" />
+            <TextBlock Foreground="#FFBFBFBF" Text="To get started, start the game you want play, then select it this program." />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button
+                    Name="HaloCEButton"
+                    Content="Halo CE"
+                    Foreground="White"
+                    Click="HaloCEButton_OnClick">
+                    <Button.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="Background" Value="#FF464646" />
+                            <Setter Property="BorderBrush" Value="#FF1E699B" />
+                            <Setter Property="BorderThickness" Value="2" />
+                            <Setter Property="TextElement.Foreground" Value="White" />
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="Gray" />
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="Background" Value="#FFCECECE" />
+                        </Style>
+                        <Style Selector="Button:disabled">
+                            <Setter Property="Background" Value="#FF858585" />
+                            <Setter Property="BorderBrush" Value="#FF858585" />
+                            <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                <Button
+                    Name="MCCButton"
+                    Content="Master Chief Collection"
+                    Foreground="White"
+                    Click="MCCButton_OnClick">
+                    <Button.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="Background" Value="#FF464646" />
+                            <Setter Property="BorderBrush" Value="#FF1E699B" />
+                            <Setter Property="BorderThickness" Value="2" />
+                            <Setter Property="TextElement.Foreground" Value="White" />
+                        </Style>
+                        <Style Selector="Button:pointerover">
+                            <Setter Property="Background" Value="Gray" />
+                        </Style>
+                        <Style Selector="Button:pressed">
+                            <Setter Property="Background" Value="#FFCECECE" />
+                        </Style>
+                        <Style Selector="Button:disabled">
+                            <Setter Property="Background" Value="#FF858585" />
+                            <Setter Property="BorderBrush" Value="#FF858585" />
+                            <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <Border
+            Background="#FF3A3838"
+            BorderBrush="#FF1E699B"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="10">
+            <StackPanel Spacing="6">
+                <TextBlock Foreground="White" Text="Global Hotkey" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Foreground="#FFBFBFBF" Text="Button Selected:" />
+                    <TextBlock Name="HotkeyText" Foreground="White" Text="None" />
+                    <Button Name="SetHotkeyButton" Content="Set" Click="SetHotkeyButton_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#FF464646" />
+                                <Setter Property="BorderBrush" Value="#FF1E699B" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </Style>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="Gray" />
+                            </Style>
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="#FFCECECE" />
+                            </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Background" Value="#FF858585" />
+                                <Setter Property="BorderBrush" Value="#FF858585" />
+                                <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    <Button Name="ClearHotkeyButton" Content="Clear" Click="ClearHotkeyButton_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#FF464646" />
+                                <Setter Property="BorderBrush" Value="#FF1E699B" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </Style>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="Gray" />
+                            </Style>
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="#FFCECECE" />
+                            </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Background" Value="#FF858585" />
+                                <Setter Property="BorderBrush" Value="#FF858585" />
+                                <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </StackPanel>
+                <TextBlock Name="HotkeyStatusText" Foreground="#FFBFBFBF" Text="Initializing global hotkeys..." TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Border
+            Background="#FF3A3838"
+            BorderBrush="#FF1E699B"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="10">
+            <StackPanel Spacing="6">
+                <TextBlock Foreground="White" Text="Controller Hotkey" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Foreground="#FFBFBFBF" Text="Key Selected:" />
+                    <TextBlock Name="ControllerHotkeyText" Foreground="White" Text="None" />
+                    <Button Name="SetControllerHotkeyButton" Content="Set" Click="SetControllerHotkeyButton_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#FF464646" />
+                                <Setter Property="BorderBrush" Value="#FF1E699B" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </Style>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="Gray" />
+                            </Style>
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="#FFCECECE" />
+                            </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Background" Value="#FF858585" />
+                                <Setter Property="BorderBrush" Value="#FF858585" />
+                                <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                    <Button Name="ClearControllerHotkeyButton" Content="Clear" Click="ClearControllerHotkeyButton_OnClick">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#FF464646" />
+                                <Setter Property="BorderBrush" Value="#FF1E699B" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </Style>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="Gray" />
+                            </Style>
+                            <Style Selector="Button:pressed">
+                                <Setter Property="Background" Value="#FFCECECE" />
+                            </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="Background" Value="#FF858585" />
+                                <Setter Property="BorderBrush" Value="#FF858585" />
+                                <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </StackPanel>
+                <TextBlock Name="ControllerHotkeyStatusText" Foreground="#FFBFBFBF" Text="Controller hotkey: Idle" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <TextBlock
+            Name="CheckpointStatusText"
+            Foreground="#FFBFBFBF"
+            Text="Checkpoint status: Idle"
+            TextWrapping="Wrap" />
 
         <Button
             Name="ForceCheckpointButton"
-            Grid.Row="1"
-            Margin="20"
             Content="Force Checkpoint"
             Foreground="White"
             Click="ForceCheckpointButton_OnClick">
@@ -49,60 +242,5 @@
                 </Style>
             </Button.Styles>
         </Button>
-        
-        <Button
-            Name="HaloCEButton"
-            Grid.Row="2"
-            Margin="20"
-            Content="Halo CE"
-            Foreground="White"
-            Click="HaloCEButton_OnClick">
-            <Button.Styles>
-                <Style Selector="Button">
-                    <Setter Property="Background" Value="#FF464646" />
-                    <Setter Property="BorderBrush" Value="#FF1E699B" />
-                    <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="TextElement.Foreground" Value="White" />
-                </Style>
-                <Style Selector="Button:pointerover">
-                    <Setter Property="Background" Value="Gray" />
-                </Style>
-                <Style Selector="Button:pressed">
-                    <Setter Property="Background" Value="#FFCECECE" />
-                </Style>
-                <Style Selector="Button:disabled">
-                    <Setter Property="Background" Value="#FF858585" />
-                    <Setter Property="BorderBrush" Value="#FF858585" />
-                    <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
-                </Style>
-            </Button.Styles>
-        </Button>
-        <Button
-            Name="MCCButton"
-            Grid.Row="3"
-            Margin="20"
-            Content="Master Chief Collection"
-            Foreground="White"
-            Click="MCCButton_OnClick">
-            <Button.Styles>
-                <Style Selector="Button">
-                    <Setter Property="Background" Value="#FF464646" />
-                    <Setter Property="BorderBrush" Value="#FF1E699B" />
-                    <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="TextElement.Foreground" Value="White" />
-                </Style>
-                <Style Selector="Button:pointerover">
-                    <Setter Property="Background" Value="Gray" />
-                </Style>
-                <Style Selector="Button:pressed">
-                    <Setter Property="Background" Value="#FFCECECE" />
-                </Style>
-                <Style Selector="Button:disabled">
-                    <Setter Property="Background" Value="#FF858585" />
-                    <Setter Property="BorderBrush" Value="#FF858585" />
-                    <Setter Property="TextElement.Foreground" Value="#FFA5A5A5" />
-                </Style>
-            </Button.Styles>
-        </Button>
-    </Grid>
+    </StackPanel>
 </Window>
